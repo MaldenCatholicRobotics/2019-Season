@@ -1,5 +1,5 @@
 #include <kipr/botball.h>
-
+//Programmed by Gavin Sadler
 #define LIGHT 0 //Port of the light sensor
 #define LIGHTTHRESHOLD 2000 //When the line follower should turn left/right
 
