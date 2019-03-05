@@ -1,4 +1,5 @@
 #include <kipr/botball,h>
+//Programmed by Daniel Rodriguez
 //analog port0=left sensor
 //analog port1=right sensor
 //motor port 0=left motor
