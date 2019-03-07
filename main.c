@@ -14,8 +14,6 @@ int main()
 
 }   
 
-
-
 bool fire_scan(int red_channel, double red_benchmark) 
 
 { 
@@ -46,13 +44,14 @@ bool fire_scan(int red_channel, double red_benchmark)
 
 
 
-    while(counter < 5) 
+    while(counter < 50) 
 
     { 
 
         camera_update(); 
 
         red_confidence = get_object_confidence(red_channel, 0); 
+        //printf("red_confidence: %f\n", red_confidence);
 
         red_total += red_confidence; 
 
@@ -62,19 +61,19 @@ bool fire_scan(int red_channel, double red_benchmark)
 
     } 
 
-    red_average = red_total/5; 
+    red_average = red_total/50; 
 
     camera_update(); 
 
     camera_close(); 
 
-    printf("%f\n", red_average);   
+    printf("red average:%f\n", red_average);   
 
     if (red_average >= red_benchmark) 
 
     { 
 
-        printf("THE BUILDING IS ON FIRE");
+        printf("FIRE\n");
         return true; 
 
     } 
@@ -82,7 +81,7 @@ bool fire_scan(int red_channel, double red_benchmark)
     else 
 
     { 
-        printf("THE BUILDING IS NOT ON FIRE");
+        printf("SAFE\n");
         return false; 
 
     } 
