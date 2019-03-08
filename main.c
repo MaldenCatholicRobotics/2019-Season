@@ -1,11 +1,12 @@
 #include <kipr/botball.h>
-
+#include <stdbool.h>
 void line_follower(int runtime, int m_port_l, int m_port_r, int ir_port_l, int ir_port_r, int slow_speed, int reg_speed, int fast_speed, int tape_benchmark);
-
+bool fire_scan(int red_channel, double red_benchmark);
 
 int main()
 {
     line_follower(10, 0, 1, 0, 1, 200, 400, 600, 3000);
+    fire_scan(0, 0.1);
     return 0;
 }
 //runtime- the number of tenths of seconds the bot should follow the line
@@ -51,3 +52,79 @@ void line_follower(int runtime, int m_port_l, int m_port_r, int ir_port_l, int i
     //shuts motors off
     ao();
 }
+
+bool fire_scan(int red_channel, double red_benchmark) 
+
+{ 
+
+    int counter = 0; 
+
+    double red_confidence; 
+
+    double red_total; 
+
+    double red_average; 
+
+    camera_open_black(); 
+
+    camera_load_config("fire"); 
+
+    camera_update(); 
+
+    printf("%i\n", get_channel_count()); 
+
+    msleep(100); 
+
+    camera_update(); 
+
+    printf("%d\n", get_object_count(0));    
+
+    msleep(100); 
+
+
+
+    while(counter < 50) 
+
+    { 
+
+        camera_update(); 
+
+        red_confidence = get_object_confidence(red_channel, 0); 
+        //printf("red_confidence: %f\n", red_confidence);
+
+        red_total += red_confidence; 
+
+        msleep(100); 
+
+        counter++; 
+
+    } 
+
+    red_average = red_total/50; 
+
+    camera_update(); 
+
+    camera_close(); 
+
+    printf("red average:%f\n", red_average);   
+
+    if (red_average >= red_benchmark) 
+
+    { 
+
+        printf("FIRE\n");
+        return true; 
+
+    } 
+
+    else 
+
+    { 
+        printf("SAFE\n");
+        return false; 
+
+    } 
+    return 0;
+} 
+
+
