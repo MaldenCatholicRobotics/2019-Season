@@ -5,7 +5,7 @@ bool fire_scan(int red_channel, double red_benchmark);
 
 int main()
 {
-    line_follower(10, 0, 1, 0, 1, 200, 400, 600, 3000);
+    line_follower(100, 0, 1, 1, 0, 800, 1200, 1600, 3000);
     fire_scan(0, 0.1);
     return 0;
 }
@@ -28,26 +28,33 @@ void line_follower(int runtime, int m_port_l, int m_port_r, int ir_port_l, int i
             mav(m_port_l, reg_speed);
             mav(m_port_r, reg_speed);
             msleep(100);
-            printf("Moving straight");
+            printf("straight");
+            printf("analog left: %i /n", analog(0));
+            printf("analog right: %i /n", analog(1));
         }
         //if the left sensor is off tape but the rigth sensor is on
         else if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) > tape_benchmark)
         {
             //turn left
-            mav(m_port_l, slow_speed);
-            mav(m_port_r, fast_speed);
+            mav(m_port_l, fast_speed);
+            mav(m_port_r, slow_speed);
             msleep(100);
-            printf("Moving left");
+            printf("turn right");
+            printf("analog left: %i /n", analog(0));
+            printf("analog right: %i /n", analog(1));
         }
         //assumed that the right sensor is off tape but the left is on
        else
         {
            //turn right
-            mav(m_port_l, fast_speed);
-            mav(m_port_r, slow_speed);
+            mav(m_port_l, slow_speed);
+            mav(m_port_r, fast_speed);
             msleep(100);
-            printf("Moving straight");
+           printf("move left");
+            printf("analog left: %i /n", analog(0));
+            printf("analog right: %i /n", analog(1));
         }
+        counter++;
     }
     //shuts motors off
     ao();
@@ -126,5 +133,3 @@ bool fire_scan(int red_channel, double red_benchmark)
     } 
     return 0;
 } 
-
-
