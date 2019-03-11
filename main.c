@@ -1,7 +1,7 @@
 #include <kipr/botball.h>
 #include <stdbool.h>
 void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, int tape_benchmark);
-bool fire_scan(int red_channel, double red_benchmark);
+bool fire_scan(double red_benchmark);
 
 int main()
 {
@@ -10,12 +10,35 @@ int main()
     int m_port_r = 1;
     int ir_port_l = 1;
     int ir_port_r = 0;
+    //holds the channel the red object is held in
+    int red_channel = 0;
     
-    
-    fire_scan(0, 0.1);
-    //change runtime to figure out 
-    line_follower(100, 800, 1200, 1600, 3000);
-    
+    //scans the first building for fire
+    if(fire_scan(0.1));
+    {
+        //building 1 is on fire so breaks out of loop
+        printf("Building 1 is on fire!");
+        break;
+    }
+    else
+    {
+        //building one is not on fire
+        //change runtime to figure out distance between first and second buildings
+        line_follower(100, 800, 1200, 1600, 3000);
+        //checks if building two is on fire
+         if(fire_scan(0.1))
+         {
+             printf("Building 2 is on fire!");
+             break;
+         }
+         else
+         {
+             //assumes the third building is on fire so drives from the second to third buildings
+             line_follower(100, 800, 1200, 1600, 3000);
+             printf("Building 3 is on fire!");
+          }
+    }
+    ao();
     return 0;
 }
 //runtime- the number of tenths of seconds the bot should follow the line
@@ -73,7 +96,7 @@ void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, i
 
 //red_channel- the channel that the red object is stored in (usually 0)
 //red_benchmark- the minimum average confidence for the building to be on fire
-bool fire_scan(int red_channel, double red_benchmark) 
+bool fire_scan(double red_benchmark) 
 { 
     //create a counter variable for the while loop
     int counter_1 = 0; 
