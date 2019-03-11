@@ -28,9 +28,10 @@ void line_follower(int runtime, int m_port_l, int m_port_r, int ir_port_l, int i
             mav(m_port_l, reg_speed);
             mav(m_port_r, reg_speed);
             msleep(100);
-            printf("straight");
-            printf("analog left: %i /n", analog(0));
-            printf("analog right: %i /n", analog(1));
+            
+            //printf("straight");
+            // printf("analog left: %i /n", analog(0));
+            //printf("analog right: %i /n", analog(1));
         }
         //if the left sensor is off tape but the rigth sensor is on
         else if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) > tape_benchmark)
@@ -39,9 +40,10 @@ void line_follower(int runtime, int m_port_l, int m_port_r, int ir_port_l, int i
             mav(m_port_l, fast_speed);
             mav(m_port_r, slow_speed);
             msleep(100);
-            printf("turn right");
-            printf("analog left: %i /n", analog(0));
-            printf("analog right: %i /n", analog(1));
+            
+            //printf("turn right");
+            //printf("analog left: %i /n", analog(0));
+            //printf("analog right: %i /n", analog(1));
         }
         //assumed that the right sensor is off tape but the left is on
        else
@@ -50,9 +52,10 @@ void line_follower(int runtime, int m_port_l, int m_port_r, int ir_port_l, int i
             mav(m_port_l, slow_speed);
             mav(m_port_r, fast_speed);
             msleep(100);
-           printf("move left");
-            printf("analog left: %i /n", analog(0));
-            printf("analog right: %i /n", analog(1));
+           
+            //printf("move left");
+            //printf("analog left: %i /n", analog(0));
+            //printf("analog right: %i /n", analog(1));
         }
         counter++;
     }
@@ -60,61 +63,61 @@ void line_follower(int runtime, int m_port_l, int m_port_r, int ir_port_l, int i
     ao();
 }
 
+//red_channel- the channel that the red object is stored in (usually 0)
+//red_benchmark- the minimum average confidence for the building to be on fire
 bool fire_scan(int red_channel, double red_benchmark) 
-
 { 
-
+    //create a counter variable for the while loop
     int counter = 0; 
 
+    //creates variables to store values gathered by camera
     double red_confidence; 
-
     double red_total; 
-
     double red_average; 
 
+    //configures and updates camera
     camera_open_black(); 
-
     camera_load_config("fire"); 
-
     camera_update(); 
-
+    
+    //prints number of channels
     printf("%i\n", get_channel_count()); 
-
     msleep(100); 
-
     camera_update(); 
 
+    //prints number of objects in channel
     printf("%d\n", get_object_count(0));    
-
     msleep(100); 
 
 
-
+    //one snapshot and about one tenth of a second per iteration
     while(counter < 50) 
 
     { 
 
         camera_update(); 
 
-        red_confidence = get_object_confidence(red_channel, 0); 
+        //gets the confidence that the building is on fire
+        red_confidence = get_object_confidence(red_channel, 0);
+        
+        //print statement for debugging
         //printf("red_confidence: %f\n", red_confidence);
 
+        //adds all snapshit confidences together
         red_total += red_confidence; 
-
         msleep(100); 
-
         counter++; 
 
     } 
 
     red_average = red_total/50; 
-
     camera_update(); 
-
     camera_close(); 
 
+    //print statement for debugging
     printf("red average:%f\n", red_average);   
 
+    //if building is on fire
     if (red_average >= red_benchmark) 
 
     { 
@@ -124,6 +127,7 @@ bool fire_scan(int red_channel, double red_benchmark)
 
     } 
 
+    //if building is not on fire
     else 
 
     { 
