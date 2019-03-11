@@ -17,7 +17,7 @@ int main()
     if(fire_scan(0.1));
     {
         //building 1 is on fire so breaks out of loop
-        printf("Building 1 is on fire!");
+        printf("Building 1 is on fire!\n");
         break;
     }
     else
@@ -28,14 +28,14 @@ int main()
         //checks if building two is on fire
          if(fire_scan(0.1))
          {
-             printf("Building 2 is on fire!");
+             printf("Building 2 is on fire!\n");
              break;
          }
          else
          {
              //assumes the third building is on fire so drives from the second to third buildings
              line_follower(100, 800, 1200, 1600, 3000);
-             printf("Building 3 is on fire!");
+             printf("Building 3 is on fire!\n");
           }
     }
     ao();
@@ -144,9 +144,10 @@ bool fire_scan(double red_benchmark)
         
         //drives the bot forward very slowly for one tenth of a second
         //this allows a larger margin of error for the camera
-        mav(m_port_l, 100);
-        mav(m_port_r, 100);
-        msleep(100);
+        //uncomment the following three lines to make code simpler but less affective 
+        //mav(m_port_l, 100);
+        //mav(m_port_r, 100);
+        //msleep(100);
         counter_1++;
     } 
 
