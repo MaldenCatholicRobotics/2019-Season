@@ -6,8 +6,8 @@ void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, i
 
 bool fire_scan(double red_benchmark);
 
-
-//creates global variables to hold the ports of the motors and ir sensors
+void claw_change(int op, int wp, int servoport, int speed);
+//creates global variables to hold the ports of the servos, motors and ir sensors
 
     int m_port_l = 0;
 
@@ -16,6 +16,8 @@ bool fire_scan(double red_benchmark);
     int ir_port_l = 1;
 
     int ir_port_r = 0;
+
+    int servoport = 0;
 
     //holds the channel the red object is held in
 
@@ -180,10 +182,6 @@ void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, i
 
 }
 
-
-
-//red_channel- the channel that the red object is stored in (usually 0)
-
 //red_benchmark- the minimum average confidence for the building to be on fire
 
 bool fire_scan(double red_benchmark) 
@@ -339,3 +337,45 @@ bool fire_scan(double red_benchmark)
     return 0;
 
 } 
+
+//op is the original position, wp is the wanted position 
+//servoport is the port of the servo and speed is the increment by which the servo position is repeatedly moved 
+claw_change(int op, int wp, int speed) 
+
+{   
+    if (op > wp) 
+    { 
+        while(op > wp)  
+        {   
+        //increments the position
+        op -= speed;  
+            
+        //sets the servo position to the incremented position
+        set_servo_position(servoport, op);   
+        
+        //to debug issues with the code 
+        //printf("opening or closing claw/"); 
+
+        msleep(100); 
+
+        }   
+    } 
+    
+    else 
+    { 
+        while(wp > op)  
+        {   
+            //increments the position
+            op += speed; 
+
+            //sets the servo position to the incremented position
+            set_servo_position(servoport, op);   
+
+            //to debug issues with the code 
+            //printf("opening or closing claw/");//to debug issues with the code  
+
+            msleep(100); 
+         }   
+    } 
+}    
+
