@@ -1,10 +1,7 @@
 #include <kipr/botball.h>
 #include <stdbool.h>
 //notes
-//claw open = 2017
-//claw closed = 1271
-//claw up = 1369
-//claw down = 914
+
 
 void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, int tape_benchmark);
 
@@ -12,22 +9,34 @@ bool fire_scan(double red_benchmark);
 
 void claw_change(int op, int wp, int servoport, int speed);
 
+void turn(int time, int power, int port) ;
+
 //creates global variables to hold the ports of the servos, motors and ir sensors
 
     int m_port_l = 0;
     int m_port_r = 1;
     int ir_port_l = 1;
     int ir_port_r = 0;
-    int servoport = 0;
-
+    int servoport_up = 0;
+    int servoport_close = 1;
+	int turn_power = 1200;
+	int turn_time = 1000;
     //holds the channel the red object is held in
     int red_channel = 0;
 
+	int claw_open = 1450;
+	int claw_close = 600;
+	int claw_up = 600;
+	int claw_down = 0;
 int main()
 
 {
-    claw_change(2017, 1271, 2);
-    claw_change(914, 1369);
+    enable_servos();
+    set_servo_position(0, claw_down);
+    set_servo_position(1, claw_open);
+    claw_change(claw_open, claw_close, 1, 20);
+    claw_change(claw_down, claw_up, 0, 20);
+    
     line_follower(18, 800, 1200, 1600, 3000);
     //scans the first building for fire
 
@@ -37,6 +46,17 @@ int main()
         //building 1 is on fire so breaks out of loop
 
         printf("Building 1 is on fire!\n");
+        turn(turn_time, turn_power, m_port_r);
+        mav(m_port_l, 1200);
+        mav(m_port_r, 1200);
+        msleep(500);
+        ao();
+        claw_change(claw_up, claw_down, 0, 20);
+        claw_change(claw_close, claw_open, 1, 20);
+        
+    	mav(m_port_l, 1200);
+        mav(m_port_r, 1200);
+        msleep(500);
     }
 
     else
@@ -50,12 +70,18 @@ int main()
         if(fire_scan(0.1))
         {
             printf("Building 2 is on fire!\n");
+            turn(turn_time, turn_power, m_port_r);
+            claw_change(claw_up, claw_down, 0, 20);
+            claw_change(claw_close, claw_open, 1, 20);
         }
         else
         {
            //assumes the third building is on fire so drives from the second to third buildings
             line_follower(12, 800, 1200, 1600, 3000);
             printf("Building 3 is on fire!\n");
+            turn(turn_time, turn_power, m_port_r);
+            claw_change(claw_up, claw_down, 0, 20);
+            claw_change(claw_close, claw_open, 1, 20);
         }
     }
     ao();
@@ -306,7 +332,7 @@ bool fire_scan(double red_benchmark)
 
 //op is the original position, wp is the wanted position 
 //servoport is the port of the servo and speed is the increment by which the servo position is repeatedly moved 
-claw_change(int op, int wp, int speed) 
+void claw_change(int op, int wp, int servoport, int speed) 
 
 {   
     if (op > wp) 
@@ -344,4 +370,19 @@ claw_change(int op, int wp, int speed)
          }   
     } 
 }    
+
+//to turn left, call the right servo port 
+
+//to turn right, call the left servo port 
+
+void turn(int time, int power, int port) 
+
+{ 
+
+mav(port, power); 
+
+msleep(time); 
+    ao();
+
+} 
 
