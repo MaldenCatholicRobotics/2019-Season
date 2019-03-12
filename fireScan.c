@@ -1,5 +1,10 @@
 #include <kipr/botball.h>
 #include <stdbool.h>
+//notes
+//claw open = 2017
+//claw closed = 1271
+//claw up = 1369
+//claw down = 914
 
 void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, int tape_benchmark);
 
@@ -21,12 +26,14 @@ void claw_change(int op, int wp, int servoport, int speed);
 int main()
 
 {
+    claw_change(2017, 1271, 2);
+    claw_change(914, 1369);
     line_follower(18, 800, 1200, 1600, 3000);
     //scans the first building for fire
 
     if(fire_scan(0.1))
 
-    {
+   {
         //building 1 is on fire so breaks out of loop
 
         printf("Building 1 is on fire!\n");
