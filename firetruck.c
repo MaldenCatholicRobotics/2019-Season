@@ -1,8 +1,6 @@
 //firetruck code
 #include <kipr/botball.h>
 #include <stdbool.h>
-//notes
-
 
 void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, int tape_benchmark);
 
@@ -12,79 +10,75 @@ void claw_change(int op, int wp, int servoport, int speed);
 
 void turn(int time, int power, int port) ;
 
-//creates global variables to hold the ports of the servos, motors and ir sensors
+void drive_forward(int time, int power);
 
-    int m_port_l = 0;
-    int m_port_r = 1;
-    int ir_port_l = 1;
-    int ir_port_r = 0;
-    int servoport_up = 0;
-    int servoport_close = 1;
-	int turn_power = 1200;
-	int turn_time = 1000;
+void drive_until_line(int tape_benchmark, int speed);
+
+//creates global variables to hold the ports of the servos, motors and ir sensors
+ int m_port_l = 0;
+ int m_port_r = 1;
+ int ir_port_l = 1;
+ int ir_port_r = 0;
+ int servoport_up = 0;
+ int servoport_close = 1;
+  int turn_power = 1200;
+	  int turn_time = 1000;
     //holds the channel the red object is held in
-    int red_channel = 0;
+   	int red_channel = 0;
 
 	int claw_open = 1450;
 	int claw_close = 600;
 	int claw_up = 600;
 	int claw_down = 0;
+
 int main()
 
 {
     enable_servos();
-    set_servo_position(0, claw_down);
+    //sets the claw to its starting position
+    set_servo_position(0, claw_up;
     set_servo_position(1, claw_open);
+	
+    //Drives past first black line		     
+    drive_forward(1000, 1200);	
+    //Stops the bot right at the second line
+    drive_until_line(3000, 1200);
+		       
+    //picks up the fire truck
+    claw_change(claw_up, claw_down, 0, 20);    
     claw_change(claw_open, claw_close, 1, 20);
     claw_change(claw_down, claw_up, 0, 20);
-    
+
+    //drives to the first medical center
     line_follower(18, 800, 1200, 1600, 3000);
-    //scans the first building for fire
-
+    drive_forward(1000, 1200);	    
+    line_follower(18, 800, 1200, 1600, 3000);
+		       
+    //scans the first medical center for fire
     if(fire_scan(0.1))
-
    {
         //building 1 is on fire so breaks out of loop
-
-        printf("Building 1 is on fire!\n");
+        printf("Center 1 is on fire!\n");
+	//Deposits the fire truck and drives away
         turn(turn_time, turn_power, m_port_r);
-        mav(m_port_l, 1200);
-        mav(m_port_r, 1200);
-        msleep(500);
-        ao();
         claw_change(claw_up, claw_down, 0, 20);
         claw_change(claw_close, claw_open, 1, 20);
-        
-    	mav(m_port_l, 1200);
-        mav(m_port_r, 1200);
-        msleep(500);
+	claw_change(claw_down, claw_up, 0, 20);
+        turn(turn_time, turn_power, m_port_l);
     }
 
     else
-
     {
-        //building one is not on fire
-        //change runtime to figure out distance between first and second buildings
+        //drives to the second center
         line_follower(12, 800, 1200, 1600, 3000);
-
-        //checks if building two is on fire
-        if(fire_scan(0.1))
-        {
-            printf("Building 2 is on fire!\n");
-            turn(turn_time, turn_power, m_port_r);
-            claw_change(claw_up, claw_down, 0, 20);
-            claw_change(claw_close, claw_open, 1, 20);
-        }
-        else
-        {
-           //assumes the third building is on fire so drives from the second to third buildings
-            line_follower(12, 800, 1200, 1600, 3000);
-            printf("Building 3 is on fire!\n");
-            turn(turn_time, turn_power, m_port_r);
-            claw_change(claw_up, claw_down, 0, 20);
-            claw_change(claw_close, claw_open, 1, 20);
-        }
-    }
+	    
+	//deposits the fire truck and drives away
+	turn(turn_time, turn_power, m_port_r);
+        claw_change(claw_up, claw_down, 0, 20);
+        claw_change(claw_close, claw_open, 1, 20);
+	claw_change(claw_down, claw_up, 0, 20);
+        turn(turn_time, turn_power, m_port_l); 
+     }
     ao();
     return 0;
 }
@@ -92,7 +86,6 @@ int main()
 //runtime- the number of tenths of seconds the bot should follow the line
 //slow_speed, reg_speed and fast_speed- the motor speeds for going straight and turning
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
-
 void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, int tape_benchmark)
 
 {
@@ -128,9 +121,6 @@ void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, i
             mav(m_port_r, slow_speed);
 
             msleep(100);
-
-
-
             //printf("turn right");
 
             //printf("analog left: %i /n", analog(0));
@@ -386,3 +376,40 @@ msleep(time);
     ao();
 
 }
+
+void drive_forward(int time, int power) 
+
+{ 
+
+    motor(motor_port_l, power); 
+
+    motor(notor_port_r, power); 
+
+    msleep(time); 
+
+    ao(); 
+
+} 
+void drive_until_line(int tape_benchmark, int speed)
+{
+	int statement = 0; 
+	while(statement == 0)
+	{
+		//if both sensors are off tape
+		if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) <= tape_benchmark)
+		{
+		    //move straight
+		    mav(m_port_l, speed);
+		    mav(m_port_r, speed);
+		    msleep(100);
+		}
+		else
+		{
+			statement = 1;
+			msleep(100);
+		}
+		ao();
+	}
+}
+			       
+
