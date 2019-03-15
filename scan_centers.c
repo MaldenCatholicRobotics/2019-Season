@@ -39,9 +39,9 @@ void turn(int time, int power, int port) ;
 int main()
 
 {
-    //sets inital claw position to down and closed
+    //sets inital claw position to up and closed
     enable_servos();
-    set_servo_position(0, claw_down);
+    set_servo_position(0, claw_up);
     set_servo_position(1, claw_close);
     
     //drives to center
