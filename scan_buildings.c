@@ -34,6 +34,8 @@ void turn(int time, int power, int port) ;
 	int claw_close = 600;
 	int claw_up = 600;
 	int claw_down = 0;
+
+int building_on_fire;
   
 //MAIN
 int main()
@@ -44,7 +46,7 @@ int main()
     set_servo_position(0, claw_up);
     set_servo_position(1, claw_close);
     
-    //drives to the building1
+    //drives to the building 1
     line_follower(18, 800, 1200, 1600, 3000);
     
     //scans building 1 for fire
@@ -53,6 +55,7 @@ int main()
     {
         //building 1 is on fire so breaks out of loop
         printf("Building 1 is on fire!\n");
+	building_on_fire = 1;
     }
 
     else
@@ -65,13 +68,15 @@ int main()
         if(fire_scan(0.1))
         {
             printf("Building 2 is on fire!\n");
+ 		building_on_fire = 2;
         }
         else
         {
             //assumes the building 3 is on fire so bot drives to building 3
             //change runtime to figure out the distance between buildings 2 and 3
             line_follower(12, 800, 1200, 1600, 3000);
-            printf("Building 3 is on fire!\n");            
+            printf("Building 3 is on fire!\n"); 
+		building_on_fire = 3;
         }
     }
     ao();
