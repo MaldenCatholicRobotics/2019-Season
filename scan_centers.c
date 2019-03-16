@@ -34,6 +34,8 @@ void turn(int time, int power, int port) ;
 	int claw_close = 600;
 	int claw_up = 600;
 	int claw_down = 0;
+
+	int center_on_fire;
   
 //MAIN
 int main()
@@ -52,6 +54,7 @@ int main()
     {
         //center 1 is on fire so breaks out of loop
         printf("Medical Center 1 is on fire!\n");
+	    center_on_fire = 0;
     }
 
     else
@@ -61,7 +64,8 @@ int main()
         line_follower(12, 800, 1200, 1600, 3000);
         
         //Assumes that center 2 is on fire
-        printf("Medical Center 2 is on fire!\n");            
+        printf("Medical Center 2 is on fire!\n");   
+	center_on_fire = 1;
         }
     }
     ao();
