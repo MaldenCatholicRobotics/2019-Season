@@ -19,6 +19,8 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power);
 
 void scan_buildings();
 
+void scan_centers();
+
   //creates global variables to hold the ports of the servos, motors and ir sensors
   int m_port_l = 0;
   int m_port_r = 1;
@@ -340,4 +342,36 @@ void scan_buildings()
     ao();
 }
 
+//finds out which medical center is on fire, stops in front of it and stores the center number in the variable
+void scan_centers()
+	
+{
+     //sets inital claw position to up and closed
+    set_servo_position(0, claw_up);
+    set_servo_position(1, claw_close);
+    
+    //drives to center
+    line_follower(18, 800, 1200, 1600, black_tape);
+    
+    //scans center 1 for fire
+    if(fire_scan(fire_benchmark))
+    {
+        //center 1 is on fire so breaks out of loop
+        printf("Medical Center 1 is on fire!\n");
+	    center_on_fire = 0;
+    }
+
+    else
+    {
+        //center 1 is not on fire so bot drives to center 2
+        //change runtime to figure out distance between centers 1 and 2
+        line_follower(12, 800, 1200, 1600, black_tape);
+        
+        //Assumes that center 2 is on fire
+        printf("Medical Center 2 is on fire!\n");   
+	center_on_fire = 1;
+        }
+    }
+    ao();
+}
 
