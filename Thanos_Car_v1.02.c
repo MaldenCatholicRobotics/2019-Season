@@ -343,8 +343,7 @@ void scan_buildings()
 }
 
 //finds out which medical center is on fire, stops in front of it and stores the center number in the variable
-void scan_centers()
-	
+void scan_centers()	
 {
      //sets inital claw position to up and closed
     set_servo_position(0, claw_up);
@@ -374,4 +373,3 @@ void scan_centers()
     }
     ao();
 }
-
