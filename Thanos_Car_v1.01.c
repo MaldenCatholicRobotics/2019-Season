@@ -13,6 +13,10 @@ void claw_change(int op, int wp, int servoport, int speed);
 
 void turn(int time, int power, int port) ;
 
+void drive_forward(int time, int l_power, int r_power); 
+
+void drive_until_line(int tape_benchmark, int l_power, int r_power);
+
 void scan_buildings();
 
   //creates global variables to hold the ports of the servos, motors and ir sensors
@@ -57,49 +61,6 @@ int main()
 
 //FUNCTIONS
 
-//finds which of the three buildings is on fire, stops in front of that building and saves the building number to the global variable
-//precodnitions: bot starts at the cross between the tape in front of the center and the buildings tape 
-//with the ball right where the tape meets
-void scan_buildings()
-{
-    set_servo_position(0, claw_up);
-    set_servo_position(1, claw_close);
-    
-    //drives to the building 1
-    line_follower(18, 800, 1200, 1600, black_tape);
-    
-    //scans building 1 for fire
-    if(fire_scan(fire_benchmark))
-
-    {
-        //building 1 is on fire so breaks out of loop
-        printf("Building 1 is on fire!\n");
-	building_on_fire = 1;
-    }
-
-    else
-    {
-        //building one is not on fire so bot drives to building 2
-        //change runtime to figure out distance between buildings 1 and 2
-        line_follower(12, 800, 1200, 1600, black_tape);
-
-        //checks if building 2 is on fire
-        if(fire_scan(fire_benchmark))
-        {
-            printf("Building 2 is on fire!\n");
- 		building_on_fire = 2;
-        }
-        else
-        {
-            //assumes the building 3 is on fire so bot drives to building 3
-            //change runtime to figure out the distance between buildings 2 and 3
-            line_follower(12, 800, 1200, 1600, black_tape);
-            printf("Building 3 is on fire!\n"); 
-		building_on_fire = 3;
-        }
-    }
-    ao();
-}
 
 //follows the tape using two ir sensors
 //precodnitions: the sensor must be either on either side of the tape or one needs to be touching the tape.
@@ -238,7 +199,6 @@ bool fire_scan(double red_benchmark)
         printf("SAFE\n");
         return false; 
     } 
-    return 0;
 } 
 
 //moves a servo to a desired position at a certain speed
@@ -295,3 +255,89 @@ void turn(int time, int power, int port)
   msleep(time); 
   ao();
 } 
+
+//a simple function to drive the bot forwards
+//l_power and r_power- the speed for the two different motors (allows for different motor rates)
+//time- the duration of driving
+void drive_forward(int time, int l_power, int r_power) 
+{ 
+    motor(motor_port_l, l_power); 
+    motor(notor_port_r, r_power); 
+    msleep(time); 
+    ao(); 
+} 
+
+//drives the bot forward until the ir sensors reach tape
+//l_power and r_power- the speed at which the two motors drive (allows for different motor rates)
+//tape_benchmark- the analog values of the tape needed
+void drive_until_line(int tape_benchmark, int l_power, int r_power)
+{
+	//creates a  variable to kick the code out of the loop
+	int statement = 0; 
+	//while the bot has not reached the tape
+	while(statement == 0)
+	{
+		//if both sensors are off tape
+		if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) <= tape_benchmark)
+		{
+		    //move straight
+		    mav(m_port_l, l_power);
+		    mav(m_port_r, r_power);
+		    msleep(100);
+		}
+		//the bot has reached the tape
+		else
+		{
+			//kick the code out of the loop
+			statement = 1;
+			msleep(100);
+		}
+		ao();
+	}
+}
+
+//finds which of the three buildings is on fire, stops in front of that building and saves the building number to the global variable
+//precodnitions: bot starts at the cross between the tape in front of the center and the buildings tape 
+//with the ball right where the tape meets
+void scan_buildings()
+{
+    set_servo_position(0, claw_up);
+    set_servo_position(1, claw_close);
+    
+    //drives to the building 1
+    line_follower(18, 800, 1200, 1600, black_tape);
+    
+    //scans building 1 for fire
+    if(fire_scan(fire_benchmark))
+
+    {
+        //building 1 is on fire so breaks out of loop
+        printf("Building 1 is on fire!\n");
+	building_on_fire = 1;
+    }
+
+    else
+    {
+        //building one is not on fire so bot drives to building 2
+        //change runtime to figure out distance between buildings 1 and 2
+        line_follower(12, 800, 1200, 1600, black_tape);
+
+        //checks if building 2 is on fire
+        if(fire_scan(fire_benchmark))
+        {
+            printf("Building 2 is on fire!\n");
+ 		building_on_fire = 2;
+        }
+        else
+        {
+            //assumes the building 3 is on fire so bot drives to building 3
+            //change runtime to figure out the distance between buildings 2 and 3
+            line_follower(12, 800, 1200, 1600, black_tape);
+            printf("Building 3 is on fire!\n"); 
+		building_on_fire = 3;
+        }
+    }
+    ao();
+}
+
+
