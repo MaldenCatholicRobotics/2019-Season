@@ -16,6 +16,8 @@ void claw_change(int op, int wp, int servoport, int speed);
 
 void turn(int time, int power, int port) ;
 
+void scan_buildings();
+
   //creates global variables to hold the ports of the servos, motors and ir sensors
   int m_port_l = 0;
   int m_port_r = 1;
@@ -23,14 +25,14 @@ void turn(int time, int power, int port) ;
   int ir_port_r = 0;
   
   //the current values needed to turn approximately 90 degrees
-	int turn_power = 1200;
-	int turn_time = 1000;
+  int turn_power = 1200;
+  int turn_time = 1000;
   
   //holds the channel the red object is held in
   int red_channel = 0;
 
   //the values of the up, down, open and close positions for the claw servos
-	int claw_open = 1450;
+  int claw_open = 1450;
 	int claw_close = 600;
 	int claw_up = 600;
 	int claw_down = 0;
@@ -43,6 +45,16 @@ int main()
 {
     //sets inital claw position to up and closed
     enable_servos();
+    scan_buildings();
+    disable_servos();
+    return 0;
+}
+
+//FUNCTIONS
+
+
+void scan_buildings()
+{
     set_servo_position(0, claw_up);
     set_servo_position(1, claw_close);
     
@@ -80,11 +92,7 @@ int main()
         }
     }
     ao();
-    return 0;
 }
-
-//FUNCTIONS
-
 //runtime- the number of tenths of seconds the bot should follow the line
 //slow_speed, reg_speed and fast_speed- the motor speeds for going straight and turning
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
