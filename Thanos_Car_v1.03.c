@@ -21,6 +21,8 @@ void scan_buildings();
 
 void scan_centers();
 
+void collect_object();
+
   //creates global variables to hold the ports of the servos, motors and ir sensors
   int m_port_l = 0;
   int m_port_r = 1;
@@ -49,6 +51,9 @@ void scan_centers();
   //variables to store data collected by the bot
   int building_on_fire;
   int center-on_fire;
+  int safe_center;
+  int safe_building_right;
+  int safe_building_left;
   
 //MAIN
 int main()
@@ -316,6 +321,8 @@ void scan_buildings()
         //building 1 is on fire so breaks out of loop
         printf("Building 1 is on fire!\n");
 	building_on_fire = 1;
+	safe_building_left = 2;
+	safe building_right = 3;
     }
 
     else
@@ -329,6 +336,8 @@ void scan_buildings()
         {
             printf("Building 2 is on fire!\n");
  		building_on_fire = 2;
+		safe_building_left = 1;
+	        safe building_right = 3;
         }
         else
         {
@@ -337,6 +346,8 @@ void scan_buildings()
             line_follower(12, 800, 1200, 1600, black_tape);
             printf("Building 3 is on fire!\n"); 
 		building_on_fire = 3;
+		safe_building_left = 1;
+	        safe building_right = 2;
         }
     }
     ao();
@@ -357,7 +368,8 @@ void scan_centers()
     {
         //center 1 is on fire so breaks out of loop
         printf("Medical Center 1 is on fire!\n");
-	    center_on_fire = 0;
+	center_on_fire = 0;
+	safe_center = 1;
     }
 
     else
@@ -369,7 +381,22 @@ void scan_centers()
         //Assumes that center 2 is on fire
         printf("Medical Center 2 is on fire!\n");   
 	center_on_fire = 1;
+	safe_center = 0;
         }
     }
     ao();
+}
+
+//picks up an object using the claw
+//preconditions: the claw is up and closed
+void collect_object()
+{
+	//opens claw
+	claw_change(claw_close, claw_open, servo_port_claw, 20);
+	//arms descends
+	claw_change(claw_up, claw_down, servo_port_arm, 20);
+	//claw closes
+	claw_change(claw_open, claw_close, servo_port_claw, 20);
+	//arm ascends
+	claw_change(claw_down, claw_up, servo_port_claw, 20);
 }
