@@ -28,8 +28,8 @@ void collect_object();
   int m_port_r = 1;
   int ir_port_l = 1;
   int ir_port_r = 0;
-  int servo_port_arm;
-  int servo_port_claw;
+  int servo_port_arm = 0;
+  int servo_port_claw = 2;
   
   //the current values needed to turn approximately 90 degrees
   int turn_power = 1200;
@@ -40,17 +40,17 @@ void collect_object();
 
   //holds the color benchmarks 
   int black_tape = 3000;
-  double fire_benchmark = 0.1;
+  double fire_benchmark = 0.4;
 
   //the values of the up, down, open and close positions for the claw servos
   int claw_open = 1450;
-  int claw_close = 600;
+  int claw_close = 900;
   int claw_up = 600;
-  int claw_down = 0;
+  int claw_down = 100;
   
   //variables to store data collected by the bot
   int building_on_fire;
-  int center-on_fire;
+  int center_on_fire;
   int safe_center;
   int safe_building_right;
   int safe_building_left;
@@ -61,6 +61,7 @@ int main()
 {
     //sets inital claw position to up and closed
     enable_servos();
+    collect_object();
     scan_buildings();
     disable_servos();
     return 0;
@@ -155,7 +156,7 @@ bool fire_scan(double red_benchmark)
     //one snapshot and about one tenth of a second per iteration
     //adjust the number to number of sets of movement 
     //the number of snaphsots taken will be the numbers used in the conditions of the two while loops multiplied
-    while(counter_1 < 5) 
+    while(counter_1 < 4) 
     { 
         //creates a counter variable
         int counter_2 = 0;
@@ -268,8 +269,8 @@ void turn(int time, int power, int port)
 //time- the duration of driving
 void drive(int time, int l_power, int r_power) 
 { 
-    motor(motor_port_l, l_power); 
-    motor(notor_port_r, r_power); 
+    motor(m_port_l, l_power); 
+    motor(m_port_r, r_power); 
     msleep(time); 
     ao(); 
 } 
@@ -308,8 +309,8 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
 //with the ball right where the tape meets
 void scan_buildings()
 {
-    set_servo_position(0, claw_up);
-    set_servo_position(1, claw_close);
+    set_servo_position(servo_port_arm, claw_up);
+    set_servo_position(servo_port_claw, claw_close);
     
     //drives to the building 1
     line_follower(18, 800, 1200, 1600, black_tape);
@@ -322,7 +323,7 @@ void scan_buildings()
         printf("Building 1 is on fire!\n");
 	building_on_fire = 1;
 	safe_building_left = 2;
-	safe building_right = 3;
+	safe_building_right = 3;
     }
 
     else
@@ -337,7 +338,7 @@ void scan_buildings()
             printf("Building 2 is on fire!\n");
  		building_on_fire = 2;
 		safe_building_left = 1;
-	        safe building_right = 3;
+	        safe_building_right = 3;
         }
         else
         {
@@ -347,7 +348,7 @@ void scan_buildings()
             printf("Building 3 is on fire!\n"); 
 		building_on_fire = 3;
 		safe_building_left = 1;
-	        safe building_right = 2;
+	        safe_building_right = 2;
         }
     }
     ao();
@@ -361,7 +362,7 @@ void scan_centers()
     set_servo_position(1, claw_close);
     
     //drives to center
-    line_follower(18, 800, 1200, 1600, black_tape);
+    line_follower(6, 800, 1200, 1600, black_tape);
     
     //scans center 1 for fire
     if(fire_scan(fire_benchmark))
@@ -376,13 +377,13 @@ void scan_centers()
     {
         //center 1 is not on fire so bot drives to center 2
         //change runtime to figure out distance between centers 1 and 2
-        line_follower(12, 800, 1200, 1600, black_tape);
+        line_follower(10, 800, 1200, 1600, black_tape);
         
         //Assumes that center 2 is on fire
         printf("Medical Center 2 is on fire!\n");   
 	center_on_fire = 1;
 	safe_center = 0;
-        }
+        
     }
     ao();
 }
@@ -391,6 +392,8 @@ void scan_centers()
 //preconditions: the claw is up and closed
 void collect_object()
 {
+    set_servo_position(0, claw_up);
+    set_servo_position(2, claw_close);
 	//opens claw
 	claw_change(claw_close, claw_open, servo_port_claw, 20);
 	//arms descends
@@ -398,5 +401,6 @@ void collect_object()
 	//claw closes
 	claw_change(claw_open, claw_close, servo_port_claw, 20);
 	//arm ascends
-	claw_change(claw_down, claw_up, servo_port_claw, 20);
+	claw_change(claw_down, claw_up, servo_port_arm, 20);
+    msleep(3000);
 }
