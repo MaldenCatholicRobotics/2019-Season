@@ -13,7 +13,7 @@ void claw_change(int op, int wp, int servoport, int speed);
 
 void turn(int time, int power, int port) ;
 
-void drive_forward(int time, int l_power, int r_power); 
+void drive(int time, int l_power, int r_power); 
 
 void drive_until_line(int tape_benchmark, int l_power, int r_power);
 
@@ -44,9 +44,9 @@ void collect_object();
 
   //the values of the up, down, open and close positions for the claw servos
   int claw_open = 1450;
-	int claw_close = 600;
-	int claw_up = 600;
-	int claw_down = 0;
+  int claw_close = 600;
+  int claw_up = 600;
+  int claw_down = 0;
   
   //variables to store data collected by the bot
   int building_on_fire;
@@ -67,7 +67,6 @@ int main()
 }
 
 //FUNCTIONS
-
 
 //follows the tape using two ir sensors
 //precodnitions: the sensor must be either on either side of the tape or one needs to be touching the tape.
@@ -264,9 +263,10 @@ void turn(int time, int power, int port)
 } 
 
 //a simple function to drive the bot forwards
+//USE NEGATIVE POWER TO DRIVE BACKWARDS1
 //l_power and r_power- the speed for the two different motors (allows for different motor rates)
 //time- the duration of driving
-void drive_forward(int time, int l_power, int r_power) 
+void drive(int time, int l_power, int r_power) 
 { 
     motor(motor_port_l, l_power); 
     motor(notor_port_r, r_power); 
