@@ -23,6 +23,12 @@ void scan_centers();
 
 void collect_object();
 
+void deliver_bridge();
+
+void deliver_ground();
+
+void deliver_roof();
+
   //creates global variables to hold the ports of the servos, motors and ir sensors
   int m_port_l = 0;
   int m_port_r = 1;
@@ -37,6 +43,9 @@ void collect_object();
   
   //holds the channel the red object is held in
   int red_channel = 0;
+
+  //the number of pictures to be taken in the fire_scan function
+  int num_pics = 20;
 
   //holds the color benchmarks 
   int black_tape = 3000;
@@ -59,8 +68,11 @@ void collect_object();
 int main()
 
 {
-    //sets inital claw position to up and closed
+    
     enable_servos();
+    //sets inital claw position to up and closed	  
+    set_servo_position(servo_port_arm, claw_up);
+    set_servo_position(servo_port_claw, claw_close);
     collect_object();
     scan_buildings();
     disable_servos();
@@ -132,7 +144,7 @@ bool fire_scan(double red_benchmark)
 { 
     //create a counter variable for the while loop
     int counter_1 = 0; 
-
+    int counter_2 = 0;
     //creates variables to store values gathered by camera
     double red_confidence; 
     double red_total; 
@@ -154,16 +166,17 @@ bool fire_scan(double red_benchmark)
     msleep(100); 
 
     //one snapshot and about one tenth of a second per iteration
-    //adjust the number to number of sets of movement 
-    //the number of snaphsots taken will be the numbers used in the conditions of the two while loops multiplied
-    while(counter_1 < 4) 
+    //creates a buffer period for the camera to set up
+    while(counter_1 < 10) 
     { 
-        //creates a counter variable
-        int counter_2 = 0;
-        
-        //adjust the number to the number of snapshots taken before moving 
-        while(counter_2 < 10)
-        {
+           //creates a counter variable
+           camera_update();
+	    msleep(100);
+	    counter_1++;
+    }   
+      //creates a running tally of the confidence in each snapshot
+    while(counter_2 < num_pics)
+    {
             camera_update(); 
 
             //gets the confidence that the building is on fire
@@ -176,17 +189,9 @@ bool fire_scan(double red_benchmark)
             red_total += red_confidence; 
             msleep(100); 
             counter_2++; 
-        }
+      }
         
-        //drives the bot forward very slowly for one tenth of a second
-        //this allows a larger margin of error for the camera
-        //comment the following three lines to make code simpler but less affective 
-        //mav(m_port_l, 100);
-        //mav(m_port_r, 100);
-        //msleep(100);
-        counter_1++;
-    } 
-    red_average = red_total/50; 
+    red_average = red_total/num_pics; 
     camera_update(); 
     camera_close(); 
 
@@ -392,8 +397,6 @@ void scan_centers()
 //preconditions: the claw is up and closed
 void collect_object()
 {
-    set_servo_position(0, claw_up);
-    set_servo_position(2, claw_close);
 	//opens claw
 	claw_change(claw_close, claw_open, servo_port_claw, 20);
 	//arms descends
@@ -404,3 +407,22 @@ void collect_object()
 	claw_change(claw_down, claw_up, servo_port_arm, 20);
     msleep(3000);
 }
+
+//puts a firefighter onto the skybridge
+void deliver_bridge()
+{
+	return 0;
+}
+
+//puts an object in front of a building or medical center
+void deliver_ground()
+{
+	return 0;
+}
+
+//puts a firefighter on top of the medical center's roof
+void deliver_roof()
+{
+	return 0;
+}
+
