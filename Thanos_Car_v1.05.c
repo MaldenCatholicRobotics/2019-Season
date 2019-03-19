@@ -39,23 +39,25 @@ void deliver_roof();
   
   //the current values needed to turn approximately 90 degrees
   int turn_power = 1200;
-  int turn_time = 1000;
+  int turn_time = 900;
   
   //holds the channel the red object is held in
   int red_channel = 0;
 
   //the number of pictures to be taken in the fire_scan function
-  int num_pics = 20;
+  int num_pics = 40;
 
   //holds the color benchmarks 
   int black_tape = 3000;
-  double fire_benchmark = 0.4;
+  double fire_benchmark = 0.1;
 
   //the values of the up, down, open and close positions for the claw servos
   int claw_open = 1450;
   int claw_close = 900;
-  int claw_up = 600;
-  int claw_down = 100;
+  int claw_up = 1440;
+  int claw_down = 900;
+  int claw_slightly_open = 1400;
+  int claw_very_high = 1800;
   
   //variables to store data collected by the bot
   int building_on_fire;
@@ -74,7 +76,8 @@ int main()
     set_servo_position(servo_port_arm, claw_up);
     set_servo_position(servo_port_claw, claw_close);
     collect_object();
-    scan_buildings();
+    scan_centers();
+    deliver_roof();
     disable_servos();
     return 0;
 }
@@ -142,6 +145,7 @@ void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, i
 //red_benchmark- the minimum average confidence for the building to be on fire
 bool fire_scan(double red_benchmark) 
 { 
+    printf("yuh");
     //create a counter variable for the while loop
     int counter_1 = 0; 
     int counter_2 = 0;
@@ -154,7 +158,7 @@ bool fire_scan(double red_benchmark)
     camera_open_black(); 
     camera_load_config("fire"); 
     camera_update(); 
-
+    printf("yuh2");
     //prints number of channels
     printf("%i\n", get_channel_count()); 
     
@@ -171,6 +175,7 @@ bool fire_scan(double red_benchmark)
     { 
            //creates a counter variable
            camera_update();
+        printf("huh");
 	    msleep(100);
 	    counter_1++;
     }   
@@ -367,7 +372,7 @@ void scan_centers()
     set_servo_position(1, claw_close);
     
     //drives to center
-    line_follower(6, 800, 1200, 1600, black_tape);
+    line_follower(3, 800, 1200, 1600, black_tape);
     
     //scans center 1 for fire
     if(fire_scan(fire_benchmark))
@@ -380,6 +385,7 @@ void scan_centers()
 
     else
     {
+        set_servo_position(servo_port_arm, claw_very_high);
         //center 1 is not on fire so bot drives to center 2
         //change runtime to figure out distance between centers 1 and 2
         line_follower(10, 800, 1200, 1600, black_tape);
@@ -405,24 +411,38 @@ void collect_object()
 	claw_change(claw_open, claw_close, servo_port_claw, 20);
 	//arm ascends
 	claw_change(claw_down, claw_up, servo_port_arm, 20);
-    msleep(3000);
 }
 
 //puts a firefighter onto the skybridge
 void deliver_bridge()
 {
-	return 0;
+	turn(turn_time, turn_power, m_port_r);
+    drive(350, 1200, 1200);
+    msleep(1000);
+    claw_change(claw_close, claw_slightly_open, servo_port_claw, 10);
+    msleep(1000);
+      drive(350, (0-1200), (0-1200));
 }
 
 //puts an object in front of a building or medical center
 void deliver_ground()
 {
-	return 0;
+	
 }
 
 //puts a firefighter on top of the medical center's roof
 void deliver_roof()
 {
-	return 0;
+    set_servo_position(servo_port_arm, claw_very_high);
+    msleep(1000);
+    ir_port_l = 0;
+    ir_port_r = 1;
+     line_follower(6, (0-800), (0-1200), (0-1600), black_tape);
+    msleep(1000);
+	turn(turn_time+100, turn_power, m_port_r);
+    drive(350, 1200, 1200);
+    msleep(1000);
+    claw_change(claw_close, claw_slightly_open, servo_port_claw, 10);
+    msleep(1000);
+      drive(350, (0-1200), (0-1200));
 }
-
