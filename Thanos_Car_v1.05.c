@@ -5,11 +5,13 @@
 //
 
 //FUNCTION DECLARATIONS
-void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, int tape_benchmark);
+void line_follower(int runtime, int tape_benchmark);
+
+void reverse_line_follower(int runtime, int tape_benchmark);
 
 bool fire_scan(double red_benchmark);
 
-void claw_change(int op, int wp, int servoport, int speed);
+void servo_change(int op, int wp, int servoport, int speed);
 
 void turn(int time, int power, int port) ;
 
@@ -50,14 +52,24 @@ void deliver_roof();
   //holds the color benchmarks 
   int black_tape = 3000;
   double fire_benchmark = 0.1;
+  
+  //speeds for the line follower
+  int reg_speed = 1200;
+  int fast_speed = 1600;
+  int slow_speed = 800;
 
-  //the values of the up, down, open and close positions for the claw servos
+  //speeds for the reverse line follower
+  int r_reg_speed = (0-1200);
+  int r_fast_speed = (0-1600);
+  int r_slow_speed = (0-800);
+
+  //the values for the claw and arm positions
   int claw_open = 1450;
   int claw_close = 900;
-  int claw_up = 1440;
-  int claw_down = 900;
+  int arm_up = 1440;
+  int arm_down = 900;
   int claw_slightly_open = 1400;
-  int claw_very_high = 1800;
+  int arm_very_high = 1800;
   
   //variables to store data collected by the bot
   int building_on_fire;
@@ -73,7 +85,7 @@ int main()
     
     enable_servos();
     //sets inital claw position to up and closed	  
-    set_servo_position(servo_port_arm, claw_up);
+    set_servo_position(servo_port_arm, arm_up);
     set_servo_position(servo_port_claw, claw_close);
     collect_object();
     scan_centers();
@@ -87,9 +99,8 @@ int main()
 //follows the tape using two ir sensors
 //precodnitions: the sensor must be either on either side of the tape or one needs to be touching the tape.
 //runtime- the number of tenths of seconds the bot should follow the line
-//slow_speed, reg_speed and fast_speed- the motor speeds for going straight and turning
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
-void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, int tape_benchmark)
+void line_follower(int runtime, int tape_benchmark)
 {
     //creates a temporary counter to control the while loop
     int counter = 0;
@@ -128,6 +139,52 @@ void line_follower(int runtime, int slow_speed, int reg_speed, int fast_speed, i
             //turn right
             mav(m_port_l, slow_speed);
             mav(m_port_r, fast_speed);
+            msleep(100);
+
+            //printf("move left");
+            //printf("analog left: %i /n", analog(0));
+            //printf("analog right: %i /n", analog(1));
+        }
+        counter++;
+    }
+    //shuts motors off
+    ao();
+}
+
+//follows the tape backwards using two ir sensors
+//precodnitions: the sensor must be either on either side of the tape or one needs to be touching the tape.
+//runtime- the number of tenths of seconds the bot should follow the line
+//tape_benchmark- the ir value that decides if the sensor is on the tape or not
+void reverse_line_follower(int runtime, int tape_benchmark)
+{
+    //creates a temporary counter to control the while loop
+    int counter = 0;
+    //keeps the program running for a specified time
+    while(counter <= runtime)
+    {
+        //if both sensors are off tape
+        if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) <= tape_benchmark)
+        {
+            //move straight
+            mav(m_port_l, r_reg_speed);
+            mav(m_port_r, r_reg_speed);
+            msleep(100);
+        }
+        //if the left sensor is off tape but the rigth sensor is on
+        else if(analog(ir_port_r) <= tape_benchmark && analog(ir_port_l) > tape_benchmark)
+
+        {
+            //turn left
+            mav(m_port_l, r_fast_speed);
+            mav(m_port_r, r_slow_speed);
+            msleep(100);
+        }
+        //assumed that the right sensor is off tape but the left is on
+        else
+        {
+            //turn right
+            mav(m_port_l, r_slow_speed);
+            mav(m_port_r, r_fast_speed);
             msleep(100);
 
             //printf("move left");
@@ -223,7 +280,7 @@ bool fire_scan(double red_benchmark)
 //wp- the end positon of the servo
 //servoport- the port of the servo 
 //speed- the increment by which the servo position is repeatedly moved 
-void claw_change(int op, int wp, int servoport, int speed) 
+void servo_change(int op, int wp, int servoport, int speed) 
 {   
     if (op > wp) 
     { 
@@ -319,11 +376,8 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
 //with the ball right where the tape meets
 void scan_buildings()
 {
-    set_servo_position(servo_port_arm, claw_up);
-    set_servo_position(servo_port_claw, claw_close);
-    
     //drives to the building 1
-    line_follower(18, 800, 1200, 1600, black_tape);
+    line_follower(18, black_tape);
     
     //scans building 1 for fire
     if(fire_scan(fire_benchmark))
@@ -340,7 +394,7 @@ void scan_buildings()
     {
         //building one is not on fire so bot drives to building 2
         //change runtime to figure out distance between buildings 1 and 2
-        line_follower(12, 800, 1200, 1600, black_tape);
+        line_follower(12, black_tape);
 
         //checks if building 2 is on fire
         if(fire_scan(fire_benchmark))
@@ -354,7 +408,7 @@ void scan_buildings()
         {
             //assumes the building 3 is on fire so bot drives to building 3
             //change runtime to figure out the distance between buildings 2 and 3
-            line_follower(12, 800, 1200, 1600, black_tape);
+            line_follower(12, black_tape);
             printf("Building 3 is on fire!\n"); 
 		building_on_fire = 3;
 		safe_building_left = 1;
@@ -367,20 +421,16 @@ void scan_buildings()
 //finds out which medical center is on fire, stops in front of it and stores the center number in the variable
 void scan_centers()	
 {
-     //sets inital claw position to up and closed
-    set_servo_position(0, claw_up);
-    set_servo_position(1, claw_close);
-    
     //drives to center
-    line_follower(3, 800, 1200, 1600, black_tape);
+    line_follower(3, black_tape);
     
     //scans center 1 for fire
     if(fire_scan(fire_benchmark))
     {
         //center 1 is on fire so breaks out of loop
         printf("Medical Center 1 is on fire!\n");
-	center_on_fire = 0;
-	safe_center = 1;
+	center_on_fire = 1;
+	safe_center = 2;
     }
 
     else
@@ -388,12 +438,12 @@ void scan_centers()
         set_servo_position(servo_port_arm, claw_very_high);
         //center 1 is not on fire so bot drives to center 2
         //change runtime to figure out distance between centers 1 and 2
-        line_follower(10, 800, 1200, 1600, black_tape);
+        line_follower(10, black_tape);
         
         //Assumes that center 2 is on fire
         printf("Medical Center 2 is on fire!\n");   
-	center_on_fire = 1;
-	safe_center = 0;
+	center_on_fire = 2;
+	safe_center = 1;
         
     }
     ao();
@@ -404,45 +454,83 @@ void scan_centers()
 void collect_object()
 {
 	//opens claw
-	claw_change(claw_close, claw_open, servo_port_claw, 20);
+	servo_change(claw_close, claw_open, servo_port_claw, 20);
 	//arms descends
-	claw_change(claw_up, claw_down, servo_port_arm, 20);
+	servo_change(arm_up, arm_down, servo_port_arm, 20);
 	//claw closes
-	claw_change(claw_open, claw_close, servo_port_claw, 20);
+	servo_change(claw_open, claw_close, servo_port_claw, 20);
 	//arm ascends
-	claw_change(claw_down, claw_up, servo_port_arm, 20);
+	servo_change(arm_down, arm_up, servo_port_arm, 20);
 }
 
 //puts a firefighter onto the skybridge
 void deliver_bridge()
 {
-	turn(turn_time, turn_power, m_port_r);
-    drive(350, 1200, 1200);
+    //turn left so the bot is facing the skybridge
+    turn(turn_time, turn_power, m_port_r);
+    //drive until the firefighter is just over the skybridge
+    drive(350, reg_speed, reg_speed);
     msleep(1000);
-    claw_change(claw_close, claw_slightly_open, servo_port_claw, 10);
+    //slowly and slightly opens the claw to drop the firefighter onto the skybrdige
+    servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
     msleep(1000);
-      drive(350, (0-1200), (0-1200));
+    //drives back the same distance as it drove forwards earlier
+    drive(350, r_reg_speed), r_reg_speed);
 }
 
 //puts an object in front of a building or medical center
 void deliver_ground()
 {
-	
+	//set the arm to an extremelyhigh position to avoid hitting the center
+	    set_servo_position(servo_port_arm, arm_very_high);
+	    msleep(1000);
+	    //follows the line backwards shortly
+	    reverse_line_follower(6, black_tape);
+	    msleep(1000);
+	    //turns to face the center
+	    turn(turn_time+100, turn_power, m_port_r);
+	    //lowers claw to a down position
+            servo_change(arm_very_high, arm_down, servo_port_arm, 20);
+	    //slowly and slightly opens claw to release object
+	    servo_change(claw_close, claw_slightly_open, servo_port_claw, 20);    
 }
 
 //puts a firefighter on top of the medical center's roof
 void deliver_roof()
 {
-    set_servo_position(servo_port_arm, claw_very_high);
-    msleep(1000);
-    ir_port_l = 0;
-    ir_port_r = 1;
-     line_follower(6, (0-800), (0-1200), (0-1600), black_tape);
-    msleep(1000);
-	turn(turn_time+100, turn_power, m_port_r);
-    drive(350, 1200, 1200);
-    msleep(1000);
-    claw_change(claw_close, claw_slightly_open, servo_port_claw, 10);
-    msleep(1000);
-      drive(350, (0-1200), (0-1200));
+     //if center 1 is on fire
+     if_center_on_fire == 1)
+    {
+	     //set the arm to an extremelt high position to avoid hitting the center
+	    set_servo_position(servo_port_arm, arm_very_high);
+	    msleep(1000);
+	    //follows the line backwards shortly
+	    reverse_line_follower(6, black_tape);
+	    msleep(1000);
+	    //turns to face the center
+	    turn(turn_time+100, turn_power, m_port_r);
+	    //drives until the firefighter is just above the center
+	    drive(350, reg_speed, reg_speed);
+	    msleep(1000);
+	    //slowly and slightly opens claw to release firefighter onto roof
+	    servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
+	    msleep(1000);
+	    //drives backwards the same dstance it drove forwards
+	    drive(350, r_reg_speed), r_reg_speed);
+    }
+    //center 2 is on fire
+    else
+    {
+	    //same things as above but different adjustments and values
+	    set_servo_position(servo_port_arm, arm_very_high);
+	    msleep(1000);
+	    reverse_line_follower(6, black_tape);
+	    msleep(1000);
+	    turn(turn_time+100, turn_power, m_port_r);
+	    drive(350, reg_speed, reg_speed);
+	    msleep(1000);
+	    servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
+	    msleep(1000);
+	    drive(350, r_reg_speed), r_reg_speed);
+    }
 }
