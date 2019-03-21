@@ -33,7 +33,9 @@ void deliver_roof();
 
 void pull_firefighter();
 
-void pole_to_centers()
+void pole_to_centers();
+
+int firefighter_roof()
 
   //creates global variables to hold the ports of the servos, motors and ir sensors
   int m_port_l = 0;
@@ -91,10 +93,7 @@ int main()
     //sets inital claw position to up and closed	  
     set_servo_position(servo_port_arm, arm_up);
     set_servo_position(servo_port_claw, claw_close);
-    pull_firefighter();
-    pole_to_centers();
-    scan_centers();
-    deliver_roof();
+    firefighter_roof();
     disable_servos();
     return 0;
 }
@@ -588,4 +587,12 @@ void pole_to_centers()
 	//drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
 	drive(500, reg_speed, reg_speed);
 	//line_follower(5, black_tape);
+}
+
+void firefighter_roof()
+{
+    pull_firefighter();
+    pole_to_centers();
+    scan_centers();
+    deliver_roof();
 }
