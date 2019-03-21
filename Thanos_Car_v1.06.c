@@ -35,7 +35,7 @@ void pull_firefighter();
 
 void pole_to_centers();
 
-int firefighter_roof()
+void firefighter_roof()
 
   //creates global variables to hold the ports of the servos, motors and ir sensors
   int m_port_l = 0;
