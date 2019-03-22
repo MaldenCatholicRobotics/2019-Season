@@ -107,14 +107,13 @@ void firefighter_ground();
 int main()
 
 {
-    
     enable_servos();
     //sets inital claw position to up and closed	  
     set_servo_position(servo_port_arm, arm_up);
     set_servo_position(servo_port_claw, claw_close);
-    reverse_line_follower(20, black_tape);
-    opening_sequence();
-    firefighter_right_bridge();
+    reverse_line_follower(50, black_tape);
+    //opening_sequence();
+    //firefighter_right_bridge();
     disable_servos();
     return 0;
 }
@@ -139,11 +138,6 @@ void line_follower(int runtime, int tape_benchmark)
             mav(m_port_l, reg_speed);
             mav(m_port_r, reg_speed);
             msleep(100);
-
-            //printf("straight");
-            // printf("analog left: %i /n", analog(0));
-            //printf("analog right: %i /n", analog(1));
-
         }
         else if(analog(ir_port_l) >= tape_benchmark && analog(ir_port_r) >= tape_benchmark)
         {
@@ -151,11 +145,6 @@ void line_follower(int runtime, int tape_benchmark)
             mav(m_port_l, reg_speed);
             mav(m_port_r, reg_speed);
             msleep(100);
-
-            //printf("straight");
-            // printf("analog left: %i /n", analog(0));
-            //printf("analog right: %i /n", analog(1));
-
         }
         //if the left sensor is off tape but the rigth sensor is on
         else if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) > tape_benchmark)
@@ -165,10 +154,6 @@ void line_follower(int runtime, int tape_benchmark)
             mav(m_port_l, fast_speed);
             mav(m_port_r, slow_speed);
             msleep(100);
-            
-            //printf("turn right");
-            //printf("analog left: %i /n", analog(0));
-            //printf("analog right: %i /n", analog(1));
         }
         //assumed that the right sensor is off tape but the left is on
         else
@@ -177,10 +162,6 @@ void line_follower(int runtime, int tape_benchmark)
             mav(m_port_l, slow_speed);
             mav(m_port_r, fast_speed);
             msleep(100);
-
-            //printf("move left");
-            //printf("analog left: %i /n", analog(0));
-            //printf("analog right: %i /n", analog(1));
         }
         counter++;
     }
@@ -232,10 +213,6 @@ void reverse_line_follower(int runtime, int tape_benchmark)
             mav(m_port_l, r_slow_speed);
             mav(m_port_r, r_fast_speed);
             msleep(100);
-
-            //printf("move left");
-            //printf("analog left: %i /n", analog(0));
-            //printf("analog right: %i /n", analog(1));
         }
         counter++;
     }
@@ -248,7 +225,6 @@ void reverse_line_follower(int runtime, int tape_benchmark)
 //red_benchmark- the minimum average confidence for the building to be on fire
 bool fire_scan(double red_benchmark) 
 { 
-    printf("yuh");
     //create a counter variable for the while loop
     int counter_1 = 0; 
     int counter_2 = 0;
@@ -261,10 +237,8 @@ bool fire_scan(double red_benchmark)
     camera_open_black(); 
     camera_load_config("fire"); 
     camera_update(); 
-    printf("yuh2");
     //prints number of channels
     printf("%i\n", get_channel_count()); 
-    
     msleep(100); 
     camera_update(); 
 
@@ -272,7 +246,7 @@ bool fire_scan(double red_benchmark)
     printf("%d\n", get_object_count(0));    
     msleep(100); 
 
-    //one snapshot and about one tenth of a second per iteration
+    //one picture and about one tenth of a second per iteration
     //creates a buffer period for the camera to set up
     while(counter_1 < 10) 
     { 
@@ -669,7 +643,7 @@ void buildings_to_pole()
 	//drive to end of centers tape
 	reverse_line_follower(10, black_tape);
 	//drive to start of fire_station tape
-	line_follower(5, black_tape);
+	drive(500, r_reg_speed, r_reg_speed();
 	//turns left to face the firepole
 	turn(turn_time, turn_power, m_port_r);	
 }
