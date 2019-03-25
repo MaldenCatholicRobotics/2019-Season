@@ -122,7 +122,7 @@ int main()
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
 void line_follower(int runtime, int tape_benchmark)
 {
-	 //creates a temporary counter to control the while loop
+    //creates a temporary counter to control the while loop
     int counter = 0;
     //keeps the program running for a specified time
     while(counter <= runtime)
@@ -162,16 +162,16 @@ void reverse_line_follower(int runtime, int tape_benchmark)
         if(analog(r_ir_port) >= 3000)
         {
             //move left
-            mav(m_port_l, 1200);
-            mav(m_port_r, 1100);
+            mav(m_port_l, (0-1200));
+            mav(m_port_r, (0-1100));
             msleep(100);
         }
         //assumed that the sensor is off tape
         else
         {
             //turn right
-            mav(m_port_l, 1100);
-            mav(m_port_r, 1200);
+            mav(m_port_l, (0-1100));
+            mav(m_port_r, (0-1200));
             msleep(100);
         }
         counter++;
