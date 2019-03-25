@@ -57,10 +57,8 @@ void firefighter_ground();
   //creates global variables to hold the ports of the servos, motors and ir sensors
   int m_port_l = 0;
   int m_port_r = 1;
-  int ir_port_l = 1;
-  int ir_port_r = 0; 
-  int r_ir_port_l = 2;
-  int r_ir_port_r = 3;
+  int ir_port = 0;
+  int r_ir_port = 1; 
   int servo_port_arm = 0;
   int servo_port_claw = 2;
   
@@ -120,104 +118,22 @@ int main()
 
 //FUNCTIONS
 
-//follows the tape using two ir sensors
-//precodnitions: the sensor must be either on either side of the tape or one needs to be touching the tape.
+//follows the edge of a line using a single ir sensor
 //runtime- the number of tenths of seconds the bot should follow the line
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
 void line_follower(int runtime, int tape_benchmark)
 {
-    //creates a temporary counter to control the while loop
-    int counter = 0;
-    //keeps the program running for a specified time
-    while(counter <= runtime)
-    {
-        //if both sensors are off tape
-        if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) <= tape_benchmark)
-        {
-            //move straight
-            mav(m_port_l, reg_speed);
-            mav(m_port_r, reg_speed);
-            msleep(100);
-        }
-        else if(analog(ir_port_l) >= tape_benchmark && analog(ir_port_r) >= tape_benchmark)
-        {
-            //move straight
-            mav(m_port_l, reg_speed);
-            mav(m_port_r, reg_speed);
-            msleep(100);
-        }
-        //if the left sensor is off tape but the rigth sensor is on
-        else if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) > tape_benchmark)
 
-        {
-            //turn left
-            mav(m_port_l, fast_speed);
-            mav(m_port_r, slow_speed);
-            msleep(100);
-        }
-        //assumed that the right sensor is off tape but the left is on
-        else
-        {
-            //turn right
-            mav(m_port_l, slow_speed);
-            mav(m_port_r, fast_speed);
-            msleep(100);
-        }
-        counter++;
-    }
-    //shuts motors off
-    ao();
+
 }
 
-//follows the tape backwards using two ir sensors
-//precodnitions: the sensor must be either on either side of the tape or one needs to be touching the tape.
+//follows the edge of a line using a single ir sensor
 //runtime- the number of tenths of seconds the bot should follow the line
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
 void reverse_line_follower(int runtime, int tape_benchmark)
 {
-    //creates a temporary counter to control the while loop
-    int counter = 0;
-    //keeps the program running for a specified time
-    while(counter <= runtime)
-    {
-        //if both sensors are off tape
-        if(analog(r_ir_port_l) <= tape_benchmark && analog(r_ir_port_r) <= tape_benchmark)
-        {
-            //move straight
-            mav(m_port_l, r_reg_speed);
-            mav(m_port_r, r_reg_speed);
-            msleep(100);
-        }
-        
-        //if both sensors are on tape
-        else if(analog(r_ir_port_l) >= tape_benchmark && analog(r_ir_port_r) >= tape_benchmark)
-        {
-            //move straight
-            mav(m_port_l, r_reg_speed);
-            mav(m_port_r, r_reg_speed);
-            msleep(100);
-        }
-        //if the left sensor is on tape but the rigth sensor is off
-        else if(analog(r_ir_port_r) <= tape_benchmark && analog(r_ir_port_l) >= tape_benchmark)
+    
 
-        {
-            //turn left
-            mav(m_port_l, r_fast_speed);
-            mav(m_port_r, r_slow_speed);
-            msleep(100);
-        }
-        //assumed that the right sensor is on tape but the left is off
-        else
-        {
-            //turn right
-            mav(m_port_l, r_slow_speed);
-            mav(m_port_r, r_fast_speed);
-            msleep(100);
-        }
-        counter++;
-    }
-    //shuts motors off
-    ao();
 }
 
 //determines if a building or medical center is on fire and returns a boolean value
