@@ -109,9 +109,8 @@ int main()
     //sets inital claw position to up and closed	  
     set_servo_position(servo_port_arm, arm_up);
     set_servo_position(servo_port_claw, claw_close);
-    reverse_line_follower(50, black_tape);
-    //opening_sequence();
-    //firefighter_right_bridge();
+    line_follower(30, black_tape);
+    reverse_line_follower(30, black_tape);
     disable_servos();
     return 0;
 }
@@ -123,8 +122,30 @@ int main()
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
 void line_follower(int runtime, int tape_benchmark)
 {
-
-
+	 //creates a temporary counter to control the while loop
+    int counter = 0;
+    //keeps the program running for a specified time
+    while(counter <= runtime)
+    {
+        //if sensor on tape
+        if(analog(ir_port) >= 3000)
+        {
+            //move left
+            mav(m_port_l, 1200);
+            mav(m_port_r, 1100);
+            msleep(100);
+        }
+        //assumed that sensor is off tape
+        else
+        {
+            //turn right
+            mav(m_port_l, 1100);
+            mav(m_port_r, 1200);
+            msleep(100);
+        }
+        counter++;
+    }
+	ao();
 }
 
 //follows the edge of a line using a single ir sensor
@@ -132,8 +153,30 @@ void line_follower(int runtime, int tape_benchmark)
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
 void reverse_line_follower(int runtime, int tape_benchmark)
 {
-    
-
+     //creates a temporary counter to control the while loop
+    int counter = 0;
+    //keeps the program running for a specified time
+    while(counter <= runtime)
+    {
+        //if sensor on tape
+        if(analog(r_ir_port) >= 3000)
+        {
+            //move left
+            mav(m_port_l, 1200);
+            mav(m_port_r, 1100);
+            msleep(100);
+        }
+        //assumed that the sensor is off tape
+        else
+        {
+            //turn right
+            mav(m_port_l, 1100);
+            mav(m_port_r, 1200);
+            msleep(100);
+        }
+        counter++;
+    }
+	ao();
 }
 
 //determines if a building or medical center is on fire and returns a boolean value
