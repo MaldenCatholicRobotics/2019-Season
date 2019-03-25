@@ -88,7 +88,7 @@ void firefighter_ground();
 
   //the values for the claw and arm positions
   int claw_open = 1450;
-  int claw_close = 1000;
+  int claw_close = 900;
   int arm_up = 802;
   int arm_down = 150;
   int claw_slightly_open = 1450;
@@ -109,8 +109,12 @@ int main()
     //sets inital claw position to up and closed	  
     set_servo_position(servo_port_arm, arm_up);
     set_servo_position(servo_port_claw, claw_close);
-    line_follower(30, black_tape);
-    reverse_line_follower(30, black_tape);
+    pole_to_centers();
+    msleep(3000);
+    scan_centers();
+    deliver_roof();
+    centers_to_pole();
+    pull_firefighter();
     disable_servos();
     return 0;
 }
@@ -132,14 +136,14 @@ void line_follower(int runtime, int tape_benchmark)
         {
             //move left
             mav(m_port_l, 1200);
-            mav(m_port_r, 1100);
+            mav(m_port_r, 1050);
             msleep(100);
         }
         //assumed that sensor is off tape
         else
         {
             //turn right
-            mav(m_port_l, 1100);
+            mav(m_port_l, 1050);
             mav(m_port_r, 1200);
             msleep(100);
         }
@@ -163,14 +167,14 @@ void reverse_line_follower(int runtime, int tape_benchmark)
         {
             //move left
             mav(m_port_l, (0-1200));
-            mav(m_port_r, (0-1100));
+            mav(m_port_r, (0-1050));
             msleep(100);
         }
         //assumed that the sensor is off tape
         else
         {
             //turn right
-            mav(m_port_l, (0-1100));
+            mav(m_port_l, (0-1050));
             mav(m_port_r, (0-1200));
             msleep(100);
         }
@@ -332,19 +336,19 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
 	while(statement == 0)
 	{
 		//if both sensors are off tape
-		if(analog(ir_port_l) <= tape_benchmark && analog(ir_port_r) <= tape_benchmark)
+		if(analog(ir_port) <= tape_benchmark)
 		{
 		    //move straight
 		    mav(m_port_l, l_power);
 		    mav(m_port_r, r_power);
-		    msleep(100);
+		    msleep(10);
 		}
 		//the bot has reached the tape
 		else
 		{
 			//kick the code out of the loop
 			statement = 1;
-			msleep(100);
+			msleep(10);
 		}
 		ao();
 	}
@@ -522,8 +526,8 @@ void pull_firefighter()
 	servo_change(claw_close, claw_open, servo_port_claw, 20);
 	//lowers arm to ground level
 	servo_change(arm_up, arm_down, servo_port_arm, 20);
-        drive(150, reg_speed, reg_speed);
-	//drives so the claw surrounds the firefighter
+    //drives to surround firefighter
+    drive(150, reg_speed, reg_speed);
 	line_follower(2, black_tape);
 	//claw closes around firefighter, securing it
 	servo_change(claw_open, claw_close, servo_port_claw, 20);
@@ -537,7 +541,7 @@ void pull_firefighter()
 void pole_to_centers()
 {
 	//turns right to face tape in front of centers
-	turn(turn_time+50, turn_power, m_port_l);
+	turn(turn_time, turn_power, m_port_l);
 	//drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
 	//drive(500, reg_speed, reg_speed);
 	line_follower(5, black_tape);
@@ -547,14 +551,15 @@ void pole_to_centers()
 void pole_to_buildings()
 {
     //turns right to face tape in front of centers
-    turn(turn_time+50, turn_power, m_port_l);
+    turn(turn_time-100, turn_power, m_port_l);
+    msleep(2000);
     //drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
     //drive(500, reg_speed, reg_speed);
-    line_follower(5, black_tape);
+    line_follower(10, black_tape);
+    msleep(2000);
     //turn onto building tape
-    turn(turn_time+50, turn_power, m_port_l);
-    //drives to the starting point of scan_buildings
-    line_follower(4, black_tape);
+    turn(turn_time, turn_power, m_port_l);
+    msleep(2000);
 }
 
 //drives bot from medical centers to the firepole
@@ -583,7 +588,7 @@ void buildings_to_pole()
 {
 	//turns right to strattle centers tape
 	turn(turn_time, turn_power, m_port_l);
-	if(building_one_fire == 1)
+	if(building_on_fire == 1)
 	{
 		//drive back to start of scan_buildings 
 		reverse_line_follower(5, black_tape);
@@ -594,6 +599,7 @@ void buildings_to_pole()
 		reverse_line_follower(10, black_tape);
 	}
 	else
+    {
 		//drive back to start of scan_buildings 
 		reverse_line_follower(15, black_tape);
 	}
@@ -602,7 +608,7 @@ void buildings_to_pole()
 	//drive to end of centers tape
 	reverse_line_follower(10, black_tape);
 	//drive to start of fire_station tape
-	drive(500, r_reg_speed, r_reg_speed();
+	drive(500, r_reg_speed, r_reg_speed);
 	//turns left to face the firepole
 	turn(turn_time, turn_power, m_port_r);	
 }
