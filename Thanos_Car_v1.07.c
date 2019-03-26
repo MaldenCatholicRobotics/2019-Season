@@ -100,6 +100,7 @@ void firefighter_ground();
   int safe_center;
   int safe_building_right;
   int safe_building_left;
+  int left_bridge = 0;
   
 //MAIN
 int main()
@@ -458,6 +459,37 @@ void deliver_bridge()
     msleep(1000);
     //drives back the same distance as it drove forwards earlier
     drive(325, r_reg_speed, r_reg_speed);
+    //turns back onto tape
+    turn(turn_time, turn_power, m_port_l);
+    //drives back to start of scan_buildings()
+    if(left_bridge == 0)
+	    if(building_on_fire == 1)
+		{
+			reverse_line_follower(18, black_tape);
+		}
+	    else if(building_on_fire == 2)
+		{
+			reverse_line_follower(30, black_tape);
+		}
+	     else
+		{
+			reverse_line_follower(42, black_tape);
+		}
+	else
+	{
+		if(building_on_fire == 1)
+		{
+			reverse_line_follower(15, black_tape);
+		}
+	    else if(building_on_fire == 2)
+		{
+			reverse_line_follower(27, black_tape);
+		}
+	     else
+		{
+			reverse_line_follower(39, black_tape);
+		}
+	}
 }
 
 //puts an object in front of a building or medical center
@@ -501,6 +533,8 @@ void deliver_roof()
 	    msleep(1000);
 	    //drives backwards the same dstance it drove forwards
 	    drive(250, r_reg_speed, r_reg_speed);
+	     turn(turn_time+100, turn_power, m_port_l);
+	     reverse_line_follower(1, black_tape);
     }
     //center 2 is on fire
     else
@@ -516,6 +550,8 @@ void deliver_roof()
 	    servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
 	    msleep(1000);
 	    drive(350, r_reg_speed, r_reg_speed);
+	    turn(turn_time+100, turn_power, m_port_l);
+	    reverse_line_follower(9, black_tape);
     }
 }
 
@@ -622,9 +658,17 @@ void firefighter_roof()
     //drives to the medical centers
     pole_to_centers();
     //finds which medical center is on fire
-    scan_centers();
+    if(center_on_fire == 0)
+    {
+	    line_follower(5, black_tape);
+    }
+    else
+    {
+	    line_follower(14, black_tape);    
+    }		
     //delivers the firefighter to the roof of the on fire center
     deliver_roof();
+    centers_to_pole();
 }
 
 //brings the bot from the box to the buildings
@@ -655,19 +699,40 @@ void firefighter_right_bridge()
 	deliver_bridge();
 	//drives to the firepole
 	buildings_to_pole();
+	int left_bridge = 1;
 }
 
 void firetruck()
-{
-
+{	
+	
 }
 
 void firefighter_bridge_left()
 {
-	
+	pull_firefighter();
+	pole_to_buildings();
+	//drives up to the left bridge
+	if(building_on_fire == 1)
+	{
+		line_follower(15, black_tape);
+	}
+	else if(building_on_fire == 2)
+	{
+		line_follower(27, black_tape);
+	}
+	else
+	{
+		line_follower(39, black_tape);
+	}
+	//puts firefighter onto that bridge
+	deliver_bridge();
+	//drives to the firepole
+	buildings_to_pole();
 }
 
 void firefighter_ground()
 {
-	
+	pull_firefighter();
+	pole_to_centers();
+	deliver_ground();
 }
