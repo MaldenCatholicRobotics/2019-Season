@@ -74,7 +74,7 @@ void firefighter_ground();
 
   //holds the color benchmarks 
   int black_tape = 3000;
-  double fire_benchmark = 0.1;
+  double fire_benchmark = 0.2;
   
   //speeds for the line follower
   int reg_speed = 1200;
@@ -88,9 +88,9 @@ void firefighter_ground();
 
   //the values for the claw and arm positions
   int claw_open = 1500;
-  int claw_close = 500;
-  int arm_up = 1100;
-  int arm_down = 100;
+  int claw_close = 1000;
+  int arm_up = 800;
+  int arm_down = 200;
   int claw_slightly_open = 1450;
   int arm_very_high = 1100;
   
@@ -375,7 +375,7 @@ void scan_buildings()
     {
         //building one is not on fire so bot drives to building 2
         //change runtime to figure out distance between buildings 1 and 2
-        line_follower(12, black_tape);
+        line_follower(13, black_tape);
 
         //checks if building 2 is on fire
         if(fire_scan(fire_benchmark))
@@ -434,13 +434,13 @@ void scan_centers()
 void collect_object()
 {
 	//opens claw
-	servo_change(claw_close, claw_open, servo_port_claw, 20);
+	servo_change(claw_close, claw_open, servo_port_claw, 30);
 	//arms descends
-	servo_change(arm_up, arm_down, servo_port_arm, 20);
+	servo_change(arm_up, arm_down, servo_port_arm, 30);
 	//claw closes
-	servo_change(claw_open, claw_close, servo_port_claw, 20);
+	servo_change(claw_open, claw_close, servo_port_claw, 30);
 	//arm ascends
-	servo_change(arm_down, arm_up, servo_port_arm, 20);
+	servo_change(arm_down, arm_up, servo_port_arm, 30);
 }
 
 //puts a firefighter onto the skybridge
@@ -449,14 +449,14 @@ void deliver_bridge()
     //turn left so the bot is facing the skybridge
     turn(turn_time, turn_power, m_port_r);
     //drive until the firefighter is just over the skybridge
-    drive(315, reg_speed, reg_speed);
+    drive(300, reg_speed, reg_speed);
     //slowly and slightly opens the claw to drop the firefighter onto the skybrdige
     servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
     //drives back the same distance as it drove forwards earlier
-    drive(700, r_reg_speed, r_reg_speed);
+    drive(685, r_reg_speed, r_reg_speed);
     msleep(1000);
     //turns back onto tape
-    turn(turn_time-50, turn_power, m_port_l);
+    turn(turn_time-200, turn_power, m_port_l);
     msleep(1000);
     //drives back to start of scan_buildings()
     if(left_bridge == 0)
@@ -562,9 +562,7 @@ void pull_firefighter()
 	servo_change(claw_close, claw_open, servo_port_claw, 20);
 	//lowers arm to ground level
 	servo_change(arm_up, arm_down, servo_port_arm, 20);
-    //drives to surround firefighter
-    drive(150, reg_speed, reg_speed);
-	line_follower(2, black_tape);
+	drive(100, reg_speed, reg_speed);
 	//claw closes around firefighter, securing it
 	servo_change(claw_open, claw_close, servo_port_claw, 20);
 	//bot drives backwards with firefighter
@@ -588,14 +586,14 @@ void pole_to_buildings()
 {
     //turns right to face tape in front of centers
     turn(turn_time-100, turn_power, m_port_l);
-    msleep(2000);
+    msleep(1000);
     //drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
     //drive(500, reg_speed, reg_speed);
     line_follower(10, black_tape);
-    msleep(2000);
+    msleep(1000);
     //turn onto building tape
     turn(turn_time, turn_power, m_port_l);
-    msleep(2000);
+    msleep(1000);
 }
 
 //drives bot from medical centers to the firepole
@@ -623,7 +621,7 @@ void centers_to_pole()
 void buildings_to_pole()
 {
     //turns left to strattle centers tape
-	turn(turn_time-75, turn_power, m_port_r);
+	turn(turn_time+100, turn_power, m_port_r);
 	//drive to start of fire_station tape
 	drive(1500, r_reg_speed, r_reg_speed);
     msleep(1000);
@@ -662,7 +660,7 @@ void opening_sequence()
     //drives to left end of starting box
     drive_until_line(3000, 1200, 1200);
     //turn onto left end of starting box
-    turn(turn_time+120, turn_power, m_port_l);
+    turn(turn_time+150, turn_power, m_port_l);
     //drives back
     drive(100, r_reg_speed/2, r_reg_speed/2);
     //picks up the firefighter
@@ -670,12 +668,12 @@ void opening_sequence()
     //drives past starting box edge
     line_follower(3, black_tape);
     //drive to the buildings tape
-    drive(1000, 1200, 1200);
+    drive(800, 1200, 1200);
     //turn onto the building tape
     turn(turn_time+250, turn_power, m_port_l);
     msleep(1000);
     //drive to the starting point of scan_buildings
-    reverse_line_follower(18, black_tape);
+    reverse_line_follower(21, black_tape);
     msleep(1000);
 }
 
@@ -703,7 +701,7 @@ void firefighter_left_bridge()
 	//drives up to the left bridge
 	if(building_on_fire == 1)
 	{
-		line_follower(15, black_tape);
+		line_follower(3, black_tape);
 	}
 	else if(building_on_fire == 2)
 	{
@@ -713,6 +711,7 @@ void firefighter_left_bridge()
 	{
 		line_follower(39, black_tape);
 	}
+    msleep(5000);
 	//puts firefighter onto that bridge
 	deliver_bridge();
 	//drives to the firepole
