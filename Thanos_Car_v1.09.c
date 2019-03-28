@@ -87,10 +87,10 @@ void firefighter_ground();
   int r_slow_speed = (0-800);
 
   //the values for the claw and arm positions
-  int claw_open = 1450;
-  int claw_close = 900;
-  int arm_up = 802;
-  int arm_down = 150;
+  int claw_open = 1500;
+  int claw_close = 500;
+  int arm_up = 1100;
+  int arm_down = 100;
   int claw_slightly_open = 1450;
   int arm_very_high = 1100;
   
