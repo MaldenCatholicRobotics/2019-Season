@@ -76,6 +76,12 @@ void turn()
 	
 }
 
+//drives until sensors hit a line
+void drive_until_line()
+{
+	
+}
+
 //moves a servo to a desired position at a certain speed
 //op- the starting position of the servo
 //wp- the end positon of the servo
@@ -130,4 +136,10 @@ void lower_claw()
 {
 	servo_change(base_up, base_down, base_port, 30);
 	servo_change(mid_up, mid_down, mid_port, 30);
+}
+
+//drops an object to the side of the create
+void deliver_object()
+{
+	
 }
