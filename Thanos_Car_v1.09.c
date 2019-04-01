@@ -74,7 +74,7 @@ void firefighter_ground();
   //the number of pictures to be taken in the fire_scan function
   int num_pics = 20;
 
-  //holds the color benchmarks 
+  //holds the benchmarks for the camera
   int black_tape = 3000;
   double fire_benchmark = 0.2;
   
@@ -115,10 +115,11 @@ int main()
     opening_sequence();
     firefighter_right_bridge();
     firefighter_left_bridge();
-    pull_firefighter();
-    pole_to_centers();
-    scan_centers();
-    deliver_roof();
+    firefighter_roof();
+    firefighter_ground(); 
+    firefighter_ground();
+    firefighter_ground();
+    firefighter_ground();
     disable_servos();
     return 0;
 }
@@ -305,9 +306,9 @@ void servo_change(int op, int wp, int servoport, int speed)
 }    
 
 //turns the bot at a specified speed and time
-//to turn left, call the right servo port 
-//to turn right, call the left servo port 
-//speed- the power with which the wheel turns
+//to turn right, call the right servo port 
+//to turn left, call the left servo port 
+//power- the power with which the wheel turns
 //time- the larger the time the larger the degree of the turn
 //port- the port of the motor turning
 void turn(int time, int power, int port) 
@@ -318,7 +319,7 @@ void turn(int time, int power, int port)
 } 
 
 //a simple function to drive the bot forwards
-//USE NEGATIVE POWER TO DRIVE BACKWARDS1
+//USE NEGATIVE POWER TO DRIVE BACKWARDS
 //l_power and r_power- the speed for the two different motors (allows for different motor rates)
 //time- the duration of driving
 void drive(int time, int l_power, int r_power) 
@@ -393,15 +394,16 @@ void scan_buildings()
         }
         else
         {
-            //assumes the building 3 is on fire so bot drives to building 3
-            //change runtime to figure out the distance between buildings 2 and 3
-            line_follower(12, black_tape);
-            printf("Building 3 is on fire!\n"); 
+                //assumes the building 3 is on fire so bot drives to building 3
+                //change runtime to figure out the distance between buildings 2 and 3
+                line_follower(12, black_tape);
+                printf("Building 3 is on fire!\n"); 
 		building_on_fire = 3;
 		safe_building_left = 1;
 	        safe_building_right = 2;
         }
     }
+    //shuts off motors
     ao();
 }
 
@@ -500,7 +502,6 @@ void deliver_bridge_left()
     if(building_on_fire == 1)
 		{
 			reverse_line_follower(7, black_tape);
-           // printf("drive back");
 		}
 	    else if(building_on_fire == 2)
 		{
@@ -558,7 +559,7 @@ void deliver_roof()
     //center 2 is on fire
     else
     {
-	    //same things as above but different adjustments and values
+	    //same things as above but different adjustments and values to account for different center position
 	    set_servo_position(servo_port_arm, arm_very_high);
 	    msleep(1000);
 	    reverse_line_follower(4, black_tape);
@@ -581,10 +582,11 @@ void pull_firefighter()
 	servo_change(claw_close, claw_open, servo_port_claw, 20);
 	//lowers arm to ground level
 	servo_change(arm_up, arm_down, servo_port_arm, 20);
-	drive(150, reg_speed, reg_speed);
+	//drives up to surround firefighter
+	line_follower(2, black_tape);
 	//claw closes around firefighter, securing it
 	servo_change(claw_open, claw_close, servo_port_claw, 20);
-    msleep(1000);
+        msleep(1000);
 	//bot drives backwards with firefighter
 	reverse_line_follower(5, black_tape);
 	//arm lifts up with firefighter in it
@@ -663,6 +665,7 @@ void firefighter_roof()
     //drives to the medical centers
     pole_to_centers();
     //finds which medical center is on fire
+    scan_centers();
     if(center_on_fire == 0)
     {
 	    line_follower(5, black_tape);
@@ -708,7 +711,6 @@ void firefighter_right_bridge()
 	deliver_bridge();
 	//drives to the firepole
 	buildings_to_pole();
-	int left_bridge = 1;
 }
 
 void firetruck()
@@ -742,9 +744,11 @@ void firefighter_left_bridge()
 	buildings_to_pole();
 }
 
+//takes a firefighter from the pole and delivers it to the ground of the on fire medical centers
 void firefighter_ground()
 {
 	pull_firefighter();
 	pole_to_centers();
 	deliver_ground();
+	centers_to_pole();
 }
