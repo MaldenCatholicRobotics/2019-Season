@@ -7,6 +7,8 @@ void line_follower();
 
 void reverse_line_follower();
 
+void fire_scan();
+
 void drive();
 
 void turn();
@@ -15,6 +17,8 @@ void drive_until_line();
 
 void servo_change(int op, int wp, int servoport, int speed);
 
+void scan_buildings();
+
 void raise_claw();
 
 void lower_claw();
@@ -22,17 +26,17 @@ void lower_claw();
 void deliver_object();
 
 //the servo port values 
-int base_port = ;
-int mid_port = ;
-int claw_port = ;
+int base_port = 2;
+int mid_port = 1;
+int claw_port = 0;
 
 //the values for servo positions 
-int base_down = ;
-int base_up = ;
-int mid_down = ;
-int mid_up = ;
-int claw_close = ;
-int claw_open = ;
+int base_down = 1850;
+int base_up = 800;
+int mid_down = 2000;
+int mid_up = 50;
+int claw_close = 80;
+int claw_open = 80;
 
 int main()
 
@@ -61,6 +65,8 @@ void reverse_line_follower()
 {
 	
 }
+
+
 
 //drives create at an input speed for a given time
 //SHOULD BE IN ONE NOTE FUNCTION LIBRARY
@@ -123,6 +129,12 @@ void servo_change(int op, int wp, int servoport, int speed)
          }   
     } 
 } 
+
+//determines on fire building and stops create in front of it
+void scan_buildings()
+{
+	
+}
 
 //completely raises the appendage up from the down position
 void raise_claw()
