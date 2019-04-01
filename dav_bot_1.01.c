@@ -25,9 +25,14 @@ int claw_open = ;
 
 int main()
 
-{	
-	set_servo_position(
+{
+	enable_servos();
+	set_servo_position(base_port, base_down);
+	set_servo_position(mid_port, mid_down);
+	set_servo_position(claw_port, claw_close);
 	raise_claw();
+	lower_claw();
+	disable_servos();
 	return 0;
 }
 
@@ -94,7 +99,10 @@ void raise_claw()
 	servo_change(claw_close, claw_open, claw_port, 30);
 }
 
+//completely lowers the appendage down from the up position
 void lower_claw()
 {
-	
+	servo_change(base_up, base_down, base_port, 30);
+	servo_change(mid_up, mid_down, mid_port, 30);
+	servo_change(claw_open, claw_close, claw_port, 30);
 }
