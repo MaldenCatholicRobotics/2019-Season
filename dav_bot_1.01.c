@@ -217,15 +217,17 @@ void scan_buildings()
 //completely raises the appendage up from the down position
 void raise_claw()
 {
-	servo_change(base_down, base_up, base_port, 30);
-	servo_change(mid_down, mid_up, mid_port, 30);
+	servo_change(mid_down, mid_up/2, mid_port, 30);
+	servo_change(base_down, base_up, base_port, 30);	
+	servo_change(mid_up/2, mid_up, mid_port, 30);
 }
 
 //completely lowers the appendage down from the up position
 void lower_claw()
 {
+	servo_change(mid_up, mid_down/2, mid_port, 30);
 	servo_change(base_up, base_down, base_port, 30);
-	servo_change(mid_up, mid_down, mid_port, 30);
+	servo_change(mid_down/2, mid_down, mid_port, 30);
 }
 
 //drops an object to the side of the create
