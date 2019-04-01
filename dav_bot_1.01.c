@@ -41,7 +41,8 @@ int claw_open = 80;
 
 //variables for camera use
 int red_benchmark = 0.2;
-int numpics = 30;
+int num_pics = 30;
+int red_channel = 0;
 
 int main()
 {
