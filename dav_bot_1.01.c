@@ -11,11 +11,15 @@ void drive();
 
 void turn();
 
+void drive_until_line();
+
 void servo_change(int op, int wp, int servoport, int speed);
 
 void raise_claw();
 
 void lower_claw();
+
+void deliver_object();
 
 //the servo port values 
 int base_port = ;
@@ -37,8 +41,11 @@ int main()
 	set_servo_position(base_port, base_down);
 	set_servo_position(mid_port, mid_down);
 	set_servo_position(claw_port, claw_close);
+	servo_change(claw_close, claw_open, claw_port, 30);
 	raise_claw();
+	servo_change(claw_open, claw_close, claw_port, 30);
 	lower_claw();
+	servo_change(claw_close, claw_open, claw_port, 30);
 	disable_servos();
 	return 0;
 }
@@ -116,7 +123,6 @@ void raise_claw()
 {
 	servo_change(base_down, base_up, base_port, 30);
 	servo_change(mid_down, mid_up, mid_port, 30);
-	servo_change(claw_close, claw_open, claw_port, 30);
 }
 
 //completely lowers the appendage down from the up position
@@ -124,5 +130,4 @@ void lower_claw()
 {
 	servo_change(base_up, base_down, base_port, 30);
 	servo_change(mid_up, mid_down, mid_port, 30);
-	servo_change(claw_open, claw_close, claw_port, 30);
 }
