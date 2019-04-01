@@ -1,8 +1,15 @@
 #include <kipr/botball,h>
 
+//notes
+//
+
 void line_follower();
 
 void reverse_line_follower();
+
+void drive();
+
+void turn();
 
 void servo_change(int op, int wp, int servoport, int speed);
 
@@ -36,7 +43,7 @@ int main()
 	return 0;
 }
 
-//uses the create's cliff sensors to follow a line backwards
+//uses the create's cliff sensors to follow a line forwards
 void line_follower()
 {
 	
@@ -48,6 +55,19 @@ void reverse_line_follower()
 	
 }
 
+//drives create at an input speed for a given time
+//SHOULD BE IN ONE NOTE FUNCTION LIBRARY
+void drive()
+{
+	
+}
+
+//turns a creats at a certain speed for a certain time
+//SHOULD BE IN ONE NOTE FUNCTION LIBRARY
+void turn()
+{
+	
+}
 
 //moves a servo to a desired position at a certain speed
 //op- the starting position of the servo
