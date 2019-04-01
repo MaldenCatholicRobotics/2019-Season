@@ -102,7 +102,6 @@ void firefighter_ground();
   int safe_center;
   int safe_building_right;
   int safe_building_left;
-  int left_bridge = 0;
   
 //MAIN
 int main()
