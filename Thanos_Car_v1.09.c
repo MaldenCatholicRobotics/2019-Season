@@ -306,8 +306,8 @@ void servo_change(int op, int wp, int servoport, int speed)
 }    
 
 //turns the bot at a specified speed and time
-//to turn right, call the right servo port 
-//to turn left, call the left servo port 
+//to turn left, call the right servo port 
+//to turn right, call the left servo port 
 //power- the power with which the wheel turns
 //time- the larger the time the larger the degree of the turn
 //port- the port of the motor turning
