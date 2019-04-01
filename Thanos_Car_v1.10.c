@@ -89,11 +89,11 @@ void firefighter_ground();
   int r_slow_speed = (0-800);
 
   //the values for the claw and arm positions
-  int claw_open = 1500;
-  int claw_close = 1050;
+  int claw_open = 1400;
+  int claw_close = 550;
   int arm_up = 800;
   int arm_down = 250;
-  int claw_slightly_open = 1450;
+  int claw_slightly_open = 1200;
   int arm_very_high = 1100;
   
   //variables to store data collected by the bot
@@ -111,9 +111,9 @@ int main()
     //sets inital claw position to up and closed	  
     set_servo_position(servo_port_arm, arm_up);
     set_servo_position(servo_port_claw, claw_close);
-    opening_sequence();
-    firefighter_right_bridge();
-    firefighter_left_bridge();
+    //opening_sequence();
+    //firefighter_right_bridge();
+    //firefighter_left_bridge();
     firefighter_roof();
     firefighter_ground(); 
     firefighter_ground();
@@ -560,12 +560,12 @@ void deliver_roof()
     {
 	    //same things as above but different adjustments and values to account for different center position
 	    set_servo_position(servo_port_arm, arm_very_high);
-	    msleep(1000);
+	    msleep(3000);
 	    reverse_line_follower(4, black_tape);
-	    msleep(1000);
+	    msleep(3000);
 	    turn(turn_time+100, turn_power, m_port_r);
 	    drive(350, reg_speed, reg_speed);
-	    msleep(1000);
+	    msleep(3000);
 	    servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
 	    msleep(1000);
 	    drive(350, r_reg_speed, r_reg_speed);
@@ -582,12 +582,12 @@ void pull_firefighter()
 	//lowers arm to ground level
 	servo_change(arm_up, arm_down, servo_port_arm, 20);
 	//drives up to surround firefighter
-	line_follower(2, black_tape);
+	drive(350, 1200, 1200);
 	//claw closes around firefighter, securing it
 	servo_change(claw_open, claw_close, servo_port_claw, 20);
-        msleep(1000);
+        msleep(2000);
 	//bot drives backwards with firefighter
-	reverse_line_follower(5, black_tape);
+	reverse_line_follower(3, black_tape);
 	//arm lifts up with firefighter in it
 	servo_change(arm_down, arm_up, servo_port_arm, 20);
 }
@@ -596,10 +596,12 @@ void pull_firefighter()
 void pole_to_centers()
 {
 	//turns right to face tape in front of centers
-	turn(turn_time, turn_power, m_port_l);
+	turn(turn_time-100, turn_power, m_port_l);
+    msleep(1000);
 	//drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
 	//drive(500, reg_speed, reg_speed);
 	line_follower(5, black_tape);
+    msleep(1000);
 }
 
 //drives the bot from the firepole to the buildings
@@ -665,14 +667,6 @@ void firefighter_roof()
     pole_to_centers();
     //finds which medical center is on fire
     scan_centers();
-    if(center_on_fire == 0)
-    {
-	    line_follower(5, black_tape);
-    }
-    else
-    {
-	    line_follower(14, black_tape);    
-    }		
     //delivers the firefighter to the roof of the on fire center
     deliver_roof();
     centers_to_pole();
