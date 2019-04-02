@@ -87,6 +87,8 @@ void fourth_row();
 
 int main()
 {
+  opening_sequence();
+  first_row();
   return 0;
 }
 //FUNCTIONS
@@ -366,4 +368,76 @@ void collect_people()
 	servo_change(claw_open, claw_close, servo_port_claw, 30);
 	//arm ascends
 	servo_change(arm_down, arm_up, servo_port_arm, 30);
+}
+
+
+void deliver_people()
+{
+	
+}
+
+void centers_to_buildings()
+{
+	
+}
+
+void buildings_to_centers()
+{
+	
+}
+
+//brings the bot from the box to the buildings
+void opening_sequence()
+{
+    //drives to left end of starting box
+    drive_until_line(black_tape, reg_speed, reg_speed);
+    //turn onto left end of starting box
+    turn(turn_time+150, turn_power, m_port_l);
+    //drives past starting box edge
+    line_follower(3, black_tape);
+    //drive to the buildings tape
+    drive(750, reg_speed, reg_speed);
+    //turn onto the building tape
+    turn(turn_time+250, turn_power, m_port_l);
+    msleep(1000);
+    //drive to the starting point of scan_buildings
+    reverse_line_follower(20, black_tape);
+    msleep(1000);
+}
+
+void first_row()
+{
+	//drive up to row of people
+	line_follower(5, black_tape);
+	//turn left to face people
+	turn(turn_time, turn_power, m_port_r);
+	//drive up to people
+	drive(300, reg_speed, reg_speed);
+	//picks up the row of people
+	collect_people();
+	//drive back to line
+	drive(300, r_reg_speed, r_reg_speed);
+	//turns back onto line
+	turn(turn_time, turn_power, m_port_l);
+	//drives back to start of buildings
+	reverse_line_follower(5, black_tape);
+	buildings_to_centers();
+	centers_scan();
+	deliver_people();
+	centers_to_buildings();
+ }
+
+void second_row()
+{
+	
+}
+
+void third_row()
+{
+	
+}
+
+void fourth_row()
+{
+	
 }
