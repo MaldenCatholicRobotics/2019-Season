@@ -56,53 +56,53 @@ void fire_fighter_left_bridge();
 void firefighter_ground();
 
 
-  //creates global variables to hold the ports of the servos, motors and ir sensors
-  int m_port_l = 0;
-  int m_port_r = 1;
-  int ir_port = 0;
-  int r_ir_port = 1; 
-  int servo_port_arm = 0;
-  int servo_port_claw = 2;
-  
-  //the current values needed to turn approximately 90 degrees
-  int turn_power = 1200;
-  int turn_time = 900;
-  
-  //holds the channel the red object is held in
-  int red_channel = 0;
+//creates global variables to hold the ports of the servos, motors and ir sensors
+int m_port_l = 0;
+int m_port_r = 1;
+int ir_port = 0;
+int r_ir_port = 1; 
+int servo_port_arm = 0;
+int servo_port_claw = 2;
 
-  //the number of pictures to be taken in the fire_scan function
-  int num_pics = 20;
+//the current values needed to turn approximately 90 degrees
+int turn_power = 1200;
+int turn_time = 900;
 
-  //holds the benchmarks for the camera
-  int black_tape = 3000;
-  double fire_benchmark = 0.2;
-  
-  //speeds for the line follower
-  int reg_speed = 1200;
-  int fast_speed = 1600;
-  int slow_speed = 800;
+//holds the channel the red object is held in
+int red_channel = 0;
 
-  //speeds for the reverse line follower
-  int r_reg_speed = (0-1200);
-  int r_fast_speed = (0-1600);
-  int r_slow_speed = (0-800);
+//the number of pictures to be taken in the fire_scan function
+int num_pics = 20;
 
-  //the values for the claw and arm positions
-  int claw_open = 1400;
-  int claw_close = 550;
-  int arm_up = 800;
-  int arm_down = 250;
-  int claw_slightly_open = 1200;
-  int arm_very_high = 1100;
-  
-  //variables to store data collected by the bot
-  int building_on_fire;
-  int center_on_fire;
-  int safe_center;
-  int safe_building_right;
-  int safe_building_left;
-  
+//holds the benchmarks for the camera
+int black_tape = 3000;
+double fire_benchmark = 0.2;
+
+//speeds for the line follower
+int reg_speed = 1200;
+int fast_speed = 1600;
+int slow_speed = 800;
+
+//speeds for the reverse line follower
+int r_reg_speed = (0-1200);
+int r_fast_speed = (0-1600);
+int r_slow_speed = (0-800);
+
+//the values for the claw and arm positions
+int claw_open = 1400;
+int claw_close = 550;
+int arm_up = 800;
+int arm_down = 150;
+int claw_slightly_open = 1200;
+int arm_very_high = 1100;
+
+//variables to store data collected by the bot
+int building_on_fire;
+int center_on_fire;
+int safe_center;
+int safe_building_right;
+int safe_building_left;
+
 //MAIN
 int main()
 
@@ -111,9 +111,9 @@ int main()
     //sets inital claw position to up and closed	  
     set_servo_position(servo_port_arm, arm_up);
     set_servo_position(servo_port_claw, claw_close);
-    //opening_sequence();
-    //firefighter_right_bridge();
-    //firefighter_left_bridge();
+    opening_sequence();
+    firefighter_right_bridge();
+    firefighter_left_bridge();
     firefighter_roof();
     firefighter_ground(); 
     firefighter_ground();
@@ -153,7 +153,7 @@ void line_follower(int runtime, int tape_benchmark)
         }
         counter++;
     }
-	ao();
+    ao();
 }
 
 //follows the edge of a line using a single ir sensor
@@ -161,7 +161,7 @@ void line_follower(int runtime, int tape_benchmark)
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
 void reverse_line_follower(int runtime, int tape_benchmark)
 {
-     //creates a temporary counter to control the while loop
+    //creates a temporary counter to control the while loop
     int counter = 0;
     //keeps the program running for a specified time
     while(counter <= runtime)
@@ -184,7 +184,7 @@ void reverse_line_follower(int runtime, int tape_benchmark)
         }
         counter++;
     }
-	ao();
+    ao();
 }
 
 //determines if a building or medical center is on fire and returns a boolean value
@@ -217,36 +217,36 @@ bool fire_scan(double red_benchmark)
     //creates a buffer period for the camera to set up
     while(counter_1 < 10) 
     { 
-           //creates a counter variable
-           camera_update();
+        //creates a counter variable
+        camera_update();
         printf("huh");
-	    msleep(100);
-	    counter_1++;
+        msleep(100);
+        counter_1++;
     }   
-      //creates a running tally of the confidence in each snapshot
+    //creates a running tally of the confidence in each snapshot
     while(counter_2 < num_pics)
     {
-            camera_update(); 
+        camera_update(); 
 
-            //gets the confidence that the building is on fire
-            red_confidence = get_object_confidence(red_channel, 0);
+        //gets the confidence that the building is on fire
+        red_confidence = get_object_confidence(red_channel, 0);
 
-            //print statement for debugging
-            //printf("red_confidence: %f\n", red_confidence);
+        //print statement for debugging
+        //printf("red_confidence: %f\n", red_confidence);
 
-            //adds all snapshot confidences together
-            red_total += red_confidence; 
-            msleep(100); 
-            counter_2++; 
-      }
-        
+        //adds all snapshot confidences together
+        red_total += red_confidence; 
+        msleep(100); 
+        counter_2++; 
+    }
+
     red_average = red_total/num_pics; 
     camera_update(); 
     camera_close(); 
 
     //print statement for debugging
     printf("red average:%f\n", red_average);   
-    
+
     //if building is on fire
     if (red_average >= red_benchmark) 
 
@@ -273,16 +273,16 @@ void servo_change(int op, int wp, int servoport, int speed)
     { 
         while(op > wp)  
         {   
-        //increments the position
-        op -= speed;  
-            
-        //sets the servo position to the incremented position
-        set_servo_position(servoport, op);   
-        
-        //to debug issues with the code 
-        //printf("opening or closing claw/"); 
+            //increments the position
+            op -= speed;  
 
-        msleep(100); 
+            //sets the servo position to the incremented position
+            set_servo_position(servoport, op);   
+
+            //to debug issues with the code 
+            //printf("opening or closing claw/"); 
+
+            msleep(100); 
 
         }   
     }
@@ -300,7 +300,7 @@ void servo_change(int op, int wp, int servoport, int speed)
             //printf("opening or closing claw/");//to debug issues with the code  
 
             msleep(100); 
-         }   
+        }   
     } 
 }    
 
@@ -312,9 +312,9 @@ void servo_change(int op, int wp, int servoport, int speed)
 //port- the port of the motor turning
 void turn(int time, int power, int port) 
 { 
-  mav(port, power); 
-  msleep(time); 
-  ao();
+    mav(port, power); 
+    msleep(time); 
+    ao();
 } 
 
 //a simple function to drive the bot forwards
@@ -334,28 +334,28 @@ void drive(int time, int l_power, int r_power)
 //tape_benchmark- the analog values of the tape needed
 void drive_until_line(int tape_benchmark, int l_power, int r_power)
 {
-	//creates a  variable to kick the code out of the loop
-	int statement = 0; 
-	//while the bot has not reached the tape
-	while(statement == 0)
-	{
-		//if both sensors are off tape
-		if(analog(ir_port) <= tape_benchmark)
-		{
-		    //move straight
-		    mav(m_port_l, l_power);
-		    mav(m_port_r, r_power);
-		    msleep(10);
-		}
-		//the bot has reached the tape
-		else
-		{
-			//kick the code out of the loop
-			statement = 1;
-			msleep(10);
-		}
-		ao();
-	}
+    //creates a  variable to kick the code out of the loop
+    int statement = 0; 
+    //while the bot has not reached the tape
+    while(statement == 0)
+    {
+        //if both sensors are off tape
+        if(analog(ir_port) <= tape_benchmark)
+        {
+            //move straight
+            mav(m_port_l, l_power);
+            mav(m_port_r, r_power);
+            msleep(10);
+        }
+        //the bot has reached the tape
+        else
+        {
+            //kick the code out of the loop
+            statement = 1;
+            msleep(10);
+        }
+        ao();
+    }
 }
 
 //finds which of the three buildings is on fire, stops in front of that building and saves the building number to the global variable
@@ -365,16 +365,16 @@ void scan_buildings()
 {
     //drives to the building 1
     line_follower(18, black_tape);
-    
+
     //scans building 1 for fire
     if(fire_scan(fire_benchmark))
 
     {
         //building 1 is on fire so breaks out of loop
         printf("Building 1 is on fire!\n");
-	building_on_fire = 1;
-	safe_building_left = 2;
-	safe_building_right = 3;
+        building_on_fire = 1;
+        safe_building_left = 2;
+        safe_building_right = 3;
     }
 
     else
@@ -387,19 +387,19 @@ void scan_buildings()
         if(fire_scan(fire_benchmark))
         {
             printf("Building 2 is on fire!\n");
- 		building_on_fire = 2;
-		safe_building_left = 1;
-	        safe_building_right = 3;
+            building_on_fire = 2;
+            safe_building_left = 1;
+            safe_building_right = 3;
         }
         else
         {
-                //assumes the building 3 is on fire so bot drives to building 3
-                //change runtime to figure out the distance between buildings 2 and 3
-                line_follower(12, black_tape);
-                printf("Building 3 is on fire!\n"); 
-		building_on_fire = 3;
-		safe_building_left = 1;
-	        safe_building_right = 2;
+            //assumes the building 3 is on fire so bot drives to building 3
+            //change runtime to figure out the distance between buildings 2 and 3
+            line_follower(12, black_tape);
+            printf("Building 3 is on fire!\n"); 
+            building_on_fire = 3;
+            safe_building_left = 1;
+            safe_building_right = 2;
         }
     }
     //shuts off motors
@@ -410,15 +410,15 @@ void scan_buildings()
 void scan_centers()	
 {
     //drives to center
-    line_follower(5, black_tape);
-    
+    line_follower(3, black_tape);
+
     //scans center 1 for fire
     if(fire_scan(fire_benchmark))
     {
         //center 1 is on fire so breaks out of loop
         printf("Medical Center 1 is on fire!\n");
-	center_on_fire = 1;
-	safe_center = 2;
+        center_on_fire = 1;
+        safe_center = 2;
     }
 
     else
@@ -429,9 +429,9 @@ void scan_centers()
         line_follower(9, black_tape);       
         //Assumes that center 2 is on fire
         printf("Medical Center 2 is on fire!\n");   
-	center_on_fire = 2;
-	safe_center = 1;
-        
+        center_on_fire = 2;
+        safe_center = 1;
+
     }
     ao();
 }
@@ -440,167 +440,169 @@ void scan_centers()
 //preconditions: the claw is up and closed
 void collect_object()
 {
-	//opens claw
-	servo_change(claw_close, claw_open, servo_port_claw, 30);
-	//arms descends
-	servo_change(arm_up, arm_down, servo_port_arm, 30);
-	//claw closes
-	servo_change(claw_open, claw_close, servo_port_claw, 30);
-	//arm ascends
-	servo_change(arm_down, arm_up, servo_port_arm, 30);
+    //opens claw
+    servo_change(claw_close, claw_open, servo_port_claw, 30);
+    //arms descends
+    servo_change(arm_up, arm_down, servo_port_arm, 30);
+    //claw closes
+    servo_change(claw_open, claw_close, servo_port_claw, 30);
+    //arm ascends
+    servo_change(arm_down, arm_up, servo_port_arm, 30);
 }
 
 //puts a firefighter onto the skybridge
 void deliver_bridge()
 {
     //turn left so the bot is facing the skybridge
-    turn(turn_time, turn_power, m_port_r);
+    turn(turn_time+50, turn_power, m_port_r);
     //drive until the firefighter is just over the skybridge
-    drive(250, reg_speed, reg_speed);
+    drive(265, reg_speed, reg_speed);
     //slowly and slightly opens the claw to drop the firefighter onto the skybrdige
     servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
     //drives back the same distance as it drove forwards earlier
-    drive(635, r_reg_speed, r_reg_speed);
+    drive(650, r_reg_speed, r_reg_speed);
     msleep(1000);
     //turns back onto tape
     turn(turn_time-200, turn_power, m_port_l);
     msleep(1000);
     //drives back to start of scan_buildings()
-	    if(building_on_fire == 1)
-		{
-			reverse_line_follower(25, black_tape);
-            printf("drive back 1");
-            msleep(1000);
-		}
-	    else if(building_on_fire == 2)
-		{
-			reverse_line_follower(40, black_tape);
-            msleep(1000);
-		}
-	     else
-		{
-			reverse_line_follower(53, black_tape);
-             msleep(1000);
-		}
+    if(building_on_fire == 1)
+    {
+        reverse_line_follower(25, black_tape);
+        printf("drive back 1");
+        msleep(1000);
+    }
+    else if(building_on_fire == 2)
+    {
+        reverse_line_follower(40, black_tape);
+        msleep(1000);
+    }
+    else
+    {
+        reverse_line_follower(53, black_tape);
+        msleep(1000);
+    }
 }
 
 void deliver_bridge_left()
 {
-     //turn left so the bot is facing the skybridge
+    //turn left so the bot is facing the skybridge
     turn(turn_time, turn_power, m_port_r);
     //drive until the firefighter is just over the skybridge
-    drive(250, reg_speed, reg_speed);
+    drive(200, reg_speed, reg_speed);
     //slowly and slightly opens the claw to drop the firefighter onto the skybrdige
     servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
     //drives back the same distance as it drove forwards earlier
-    drive(635, r_reg_speed, r_reg_speed);
+    drive(585, r_reg_speed, r_reg_speed);
     msleep(1000);
     //turns back onto tape
     turn(turn_time-200, turn_power, m_port_l);
     msleep(1000);
     if(building_on_fire == 1)
-		{
-			reverse_line_follower(7, black_tape);
-		}
-	    else if(building_on_fire == 2)
-		{
-			reverse_line_follower(27, black_tape);
-		}
-	     else
-		{
-			reverse_line_follower(39, black_tape);
-		}
+    {
+        reverse_line_follower(7, black_tape);
+    }
+    else if(building_on_fire == 2)
+    {
+        reverse_line_follower(27, black_tape);
+    }
+    else
+    {
+        reverse_line_follower(39, black_tape);
+    }
 }
 //puts an object in front of a building or medical center
 void deliver_ground()
 {
-	//set the arm to an extremely high position to avoid hitting the center
-	    set_servo_position(servo_port_arm, arm_very_high);
-	    msleep(1000);
-	    //follows the line backwards shortly
-	    reverse_line_follower(7, black_tape);
-	    msleep(1000);
-	    //turns to face the center
-	    turn(turn_time+200, turn_power, m_port_r);	    
-         drive(350, r_reg_speed, r_reg_speed);
-	//lowers claw to a down position
-         servo_change(arm_very_high, arm_down, servo_port_arm, 20);
-	    //slowly and slightly opens claw to release object
-	    servo_change(claw_close, claw_slightly_open, servo_port_claw, 20);  
-        servo_change(arm_down, arm_up, servo_port_arm, 20);
+    //set the arm to an extremely high position to avoid hitting the center
+    set_servo_position(servo_port_arm, arm_very_high);
+    msleep(1000);
+    //follows the line backwards shortly
+    reverse_line_follower(7, black_tape);
+    msleep(1000);
+    //turns to face the center
+    turn(turn_time+200, turn_power, m_port_r);	    
+    drive(350, r_reg_speed, r_reg_speed);
+    //lowers claw to a down position
+    servo_change(arm_very_high, arm_down, servo_port_arm, 20);
+    //slowly and slightly opens claw to release object
+    servo_change(claw_close, claw_slightly_open, servo_port_claw, 20);  
+    servo_change(arm_down, arm_up, servo_port_arm, 20);
 }
 
 //puts a firefighter on top of the medical center's roof
 void deliver_roof()
 {
-     //if center 1 is on fire
-     if(center_on_fire == 1)
+    //if center 1 is on fire
+    if(center_on_fire == 1)
     {
-	     //set the arm to an extremelt high position to avoid hitting the center
-	    set_servo_position(servo_port_arm, arm_very_high);
-	    msleep(1000);
-	    //follows the line backwards shortly
-	    reverse_line_follower(6, black_tape);
-	    msleep(1000);
-	    //turns to face the center
-	    turn(turn_time+100, turn_power, m_port_r);
-	    //drives until the firefighter is just above the center
-	    drive(200, reg_speed, reg_speed);
-	    msleep(1000);
-	    //slowly and slightly opens claw to release firefighter onto roof
-	    servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
-	    msleep(1000);
-	    //drives backwards the same dstance it drove forwards
-	    drive(250, r_reg_speed, r_reg_speed);
-	     turn(turn_time+100, turn_power, m_port_l);
-	     reverse_line_follower(1, black_tape);
+        //set the arm to an extremelt high position to avoid hitting the center
+        msleep(1000);
+        //follows the line backwards shortly
+        reverse_line_follower(6, black_tape);
+        msleep(1000);
+        //turns to face the center
+        turn(turn_time+100, turn_power, m_port_r);
+        //drives until the firefighter is just above the center
+        drive(100, reg_speed, reg_speed);
+        msleep(1000);
+        //slowly and slightly opens claw to release firefighter onto roof
+        servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
+        msleep(1000);
+        //drives backwards the same dstance it drove forwards
+        drive(250, r_reg_speed, r_reg_speed);
+        msleep(3000);
+        turn(turn_time-200, turn_power, m_port_l);
+        msleep(3000);
+        reverse_line_follower(1, black_tape);
+        msleep(3000);
     }
     //center 2 is on fire
     else
     {
-	    //same things as above but different adjustments and values to account for different center position
-	    set_servo_position(servo_port_arm, arm_very_high);
-	    msleep(3000);
-	    reverse_line_follower(4, black_tape);
-	    msleep(3000);
-	    turn(turn_time+100, turn_power, m_port_r);
-	    drive(350, reg_speed, reg_speed);
-	    msleep(3000);
-	    servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
-	    msleep(1000);
-	    drive(350, r_reg_speed, r_reg_speed);
-	    turn(turn_time+100, turn_power, m_port_l);
-	    reverse_line_follower(9, black_tape);
+        //same things as above but different adjustments and values to account for different center position
+        set_servo_position(servo_port_arm, arm_very_high);
+        msleep(3000);
+        reverse_line_follower(4, black_tape);
+        msleep(3000);
+        turn(turn_time+100, turn_power, m_port_r);
+        drive(350, reg_speed, reg_speed);
+        msleep(3000);
+        servo_change(claw_close, claw_slightly_open, servo_port_claw, 10);
+        msleep(1000);
+        drive(350, r_reg_speed, r_reg_speed);
+        turn(turn_time+100, turn_power, m_port_l);
+        reverse_line_follower(9, black_tape);
     }
 }
 
 //pulls out the bottom firefighter from the pole
 void pull_firefighter()
 {
-	//opens claw
-	servo_change(claw_close, claw_open, servo_port_claw, 20);
-	//lowers arm to ground level
-	servo_change(arm_up, arm_down, servo_port_arm, 20);
-	//drives up to surround firefighter
-	drive(350, 1200, 1200);
-	//claw closes around firefighter, securing it
-	servo_change(claw_open, claw_close, servo_port_claw, 20);
-        msleep(2000);
-	//bot drives backwards with firefighter
-	reverse_line_follower(3, black_tape);
-	//arm lifts up with firefighter in it
-	servo_change(arm_down, arm_up, servo_port_arm, 20);
+    //opens claw
+    //servo_change(claw_close, claw_open, servo_port_claw, 20);
+    //lowers arm to ground level
+    servo_change(arm_up, arm_down, servo_port_arm, 20);
+    //drives up to surround firefighter
+    drive(250, 1200, 1200);
+    //claw closes around firefighter, securing it
+    servo_change(claw_open, claw_close, servo_port_claw, 20);
+    msleep(2000);
+    //bot drives backwards with firefighter
+    reverse_line_follower(2, black_tape);
+    //arm lifts up with firefighter in it
+    servo_change(arm_down, arm_up, servo_port_arm, 20);
 }
 
 //drives from the pole to the medical centers
 void pole_to_centers()
 {
-	//turns right to face tape in front of centers
-	turn(turn_time-100, turn_power, m_port_l);
+    //turns right to face tape in front of centers
+    turn(turn_time-100, turn_power, m_port_l);
     msleep(1000);
-	//drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
-	//drive(500, reg_speed, reg_speed);
-	line_follower(5, black_tape);
+    //drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
+    //drive(500, reg_speed, reg_speed);
+    line_follower(5, black_tape);
     msleep(1000);
 }
 
@@ -615,29 +617,26 @@ void pole_to_buildings()
     line_follower(8, black_tape);
     msleep(1000);
     //turn onto building tape
-    turn(turn_time, turn_power, m_port_l);
+    turn(turn_time-200, turn_power, m_port_l);
     msleep(1000);
 }
 
 //drives bot from medical centers to the firepole
 void centers_to_pole()
 {
-	//turns right to strattle centers tape
-	turn(turn_time, turn_power, m_port_l);
-	if(center_on_fire == 1)
-	{
-		//drives back to start of scan_centers
-		reverse_line_follower(5, black_tape);
-	}
-	else
-	{
-		//drives back to start of scan_centers
-		reverse_line_follower(10, black_tape);
-	}
-	//drive to start of fire_station tape
-	line_follower(5, black_tape);
-	//turns left to face the firepole
-	turn(turn_time, turn_power, m_port_r);
+    //turns right to strattle centers tape
+    turn(turn_time-75, turn_power, m_port_l);
+    msleep(1000);
+    drive(200, reg_speed, reg_speed);
+    msleep(1000);
+    turn(turn_time-200, turn_power, m_port_l);
+    msleep(1000);
+    drive(500, reg_speed, reg_speed);
+    msleep(1000);
+    turn(turn_time-50, turn_power, m_port_l);
+    msleep(1000);
+    drive(250, reg_speed, reg_speed);
+    msleep(1000);
 }
 
 //drives bot from the buildings to the firepole
@@ -645,13 +644,13 @@ void buildings_to_pole()
 {
     msleep(1000);
     //turns left to strattle centers tape
-	turn(turn_time, turn_power, m_port_r);
+    turn(turn_time, turn_power, m_port_r);
     msleep(1000);
-	//drive to start of fire_station tape
-	drive(1400, r_reg_speed, r_reg_speed);
+    //drive to start of fire_station tape
+    drive(1400, r_reg_speed, r_reg_speed);
     msleep(1000);
-	//turns left to face the firepole
-	turn(turn_time, turn_power, m_port_r);	
+    //turns left to face the firepole
+    turn(turn_time, turn_power, m_port_r);	
     msleep(1000);
     drive(150, reg_speed, reg_speed);
     msleep(1000);
@@ -698,50 +697,52 @@ void opening_sequence()
 //brings a firefighter and drops it on the skybridge to the right of the on fire building then returns to the firepole
 void firefighter_right_bridge()
 {
-	//determines which building is on fire and stops in front of it
-	scan_buildings();
-	//puts firefighter onto that bridge
-	deliver_bridge();
-	//drives to the firepole
-	buildings_to_pole();
+    //determines which building is on fire and stops in front of it
+    scan_buildings();
+    //puts firefighter onto that bridge
+    deliver_bridge();
+    //drives to the firepole
+    buildings_to_pole();
 }
 
 void firetruck()
 {	
-	
+
 }
 
 void firefighter_left_bridge()
 {
-	pull_firefighter();
-	pole_to_buildings();
-	//drives up to the left bridge
-	if(building_on_fire == 1)
-	{
-		line_follower(4, black_tape);
+    pull_firefighter();
+    pole_to_buildings();
+    //drives up to the left bridge
+    if(building_on_fire == 1)
+    {
+        line_follower(4, black_tape);
+        msleep(1000);
         line_follower(15, black_tape);
+        msleep(1000);
         reverse_line_follower(15, black_tape);
-	}
-	else if(building_on_fire == 2)
-	{
-		line_follower(27, black_tape);
-	}
-	else
-	{
-		line_follower(39, black_tape);
-	}
+    }
+    else if(building_on_fire == 2)
+    {
+        line_follower(27, black_tape);
+    }
+    else
+    {
+        line_follower(39, black_tape);
+    }
     msleep(1000);
-	//puts firefighter onto that bridge
-	deliver_bridge_left();
-	//drives to the firepole
-	buildings_to_pole();
+    //puts firefighter onto that bridge
+    deliver_bridge_left();
+    //drives to the firepole
+    buildings_to_pole();
 }
 
 //takes a firefighter from the pole and delivers it to the ground of the on fire medical centers
 void firefighter_ground()
 {
-	pull_firefighter();
-	pole_to_centers();
-	deliver_ground();
-	centers_to_pole();
+    pull_firefighter();
+    pole_to_centers();
+    deliver_ground();
+    centers_to_pole();
 }
