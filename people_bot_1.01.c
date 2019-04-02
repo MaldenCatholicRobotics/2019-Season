@@ -323,3 +323,47 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
 		ao();
 	}
 }
+
+//finds out which medical center is on fire, stops in front of it and stores the center number in the variable
+void scan_centers()	
+{
+    //drives to center
+    line_follower(5, black_tape);
+    
+    //scans center 1 for fire
+    if(fire_scan(fire_benchmark))
+    {
+        //center 1 is on fire so breaks out of loop
+        printf("Medical Center 1 is on fire!\n");
+	center_on_fire = 1;
+	safe_center = 2;
+    }
+
+    else
+    {
+        set_servo_position(servo_port_arm, arm_very_high);
+        //center 1 is not on fire so bot drives to center 2
+        //change runtime to figure out distance between centers 1 and 2
+        line_follower(9, black_tape);       
+        //Assumes that center 2 is on fire
+        printf("Medical Center 2 is on fire!\n");   
+	center_on_fire = 2;
+	safe_center = 1;
+        
+    }
+    ao();
+}
+
+//picks up a row of people using the claw
+//preconditions: the claw is up and closed
+void collect_people()
+{
+	//opens claw
+	servo_change(claw_close, claw_open, servo_port_claw, 30);
+	//arms descends
+	servo_change(arm_up, arm_down, servo_port_arm, 30);
+	//claw closes
+	servo_change(claw_open, claw_close, servo_port_claw, 30);
+	//arm ascends
+	servo_change(arm_down, arm_up, servo_port_arm, 30);
+}
