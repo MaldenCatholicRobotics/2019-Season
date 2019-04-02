@@ -89,6 +89,9 @@ int main()
 {
   opening_sequence();
   first_row();
+  second_row();
+  third_row();
+  fourth_row();
   return 0;
 }
 //FUNCTIONS
@@ -330,7 +333,7 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
 void scan_centers()	
 {
     //drives to center
-    line_follower(5, black_tape);
+    reverse_line_follower(5, black_tape);
     
     //scans center 1 for fire
     if(fire_scan(fire_benchmark))
@@ -346,7 +349,7 @@ void scan_centers()
         set_servo_position(servo_port_arm, arm_very_high);
         //center 1 is not on fire so bot drives to center 2
         //change runtime to figure out distance between centers 1 and 2
-        line_follower(9, black_tape);       
+        reverse_line_follower(9, black_tape);       
         //Assumes that center 2 is on fire
         printf("Medical Center 2 is on fire!\n");   
 	center_on_fire = 2;
@@ -378,12 +381,18 @@ void deliver_people()
 
 void centers_to_buildings()
 {
-	
+	//drives to end of centers tape
+	reverse_line_follower(5, black_tape);
+	//turns left onto buildings tape
+	turn(turn_time, turn_power, m_port_r);
 }
 
 void buildings_to_centers()
 {
-	
+	//turns right to be parallel with centers tape
+	turn(turn_time, turn_power, m_port_l);
+	//drives to building 2
+	reverse_line_follower(5, black_tape);	
 }
 
 //brings the bot from the box to the buildings
@@ -429,15 +438,59 @@ void first_row()
 
 void second_row()
 {
-	
+	line_follower(10, black_tape);
+	//turn left to face people
+	turn(turn_time, turn_power, m_port_r);
+	//drive up to people
+	drive(300, reg_speed, reg_speed);
+	//picks up the row of people
+	collect_people();
+	//drive back to line
+	drive(300, r_reg_speed, r_reg_speed);
+	//turns back onto line
+	turn(turn_time, turn_power, m_port_l);
+	//drives back to start of buildings
+	reverse_line_follower(10, black_tape);
+	buildings_to_centers();
+	deliver_people();
+	centers_to_buildings();
 }
 
 void third_row()
 {
-	
+	line_follower(15, black_tape);
+	//turn left to face people
+	turn(turn_time, turn_power, m_port_r);
+	//drive up to people
+	drive(300, reg_speed, reg_speed);
+	//picks up the row of people
+	collect_people();
+	//drive back to line
+	drive(300, r_reg_speed, r_reg_speed);
+	//turns back onto line
+	turn(turn_time, turn_power, m_port_l);
+	//drives back to start of buildings
+	reverse_line_follower(15, black_tape);
+	buildings_to_centers();
+	deliver_people();
+	centers_to_buildings();
 }
 
 void fourth_row()
 {
-	
+	line_follower(20, black_tape);
+	//turn left to face people
+	turn(turn_time, turn_power, m_port_r);
+	//drive up to people
+	drive(300, reg_speed, reg_speed);
+	//picks up the row of people
+	collect_people();
+	//drive back to line
+	drive(300, r_reg_speed, r_reg_speed);
+	//turns back onto line
+	turn(turn_time, turn_power, m_port_l);
+	//drives back to start of buildings
+	reverse_line_follower(20, black_tape);
+	buildings_to_centers();
+	deliver_people();
 }
