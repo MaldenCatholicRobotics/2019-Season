@@ -11,6 +11,8 @@ void reverse_line_follower(int runtime, int tape_benchmark);
 
 bool fire_scan(double red_benchmark);
 
+void servo_change(int op, int wp, int servoport, int speed);
+
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
 int m_port_l = 0;
@@ -216,3 +218,56 @@ bool fire_scan(double red_benchmark)
         return false; 
     } 
 } 
+
+//moves a servo from one given position to another at a certain speed
+//op- the starting position of the servo
+//wp- the ending positon of the servo
+//servoport- the port of the servo 
+//speed- the increment by which the servo position is repeatedly moved
+
+void servo_change(int op, int wp, int servoport, int speed) 
+{   
+    //allows for the servo to change in any direction
+    if (op > wp) 
+    { 
+        while(op > wp)  
+        {   
+	    //if the position is less than one increment away from the wanted position
+	    if(op - wp < speed)
+	    {
+		    //just set the claw to the end position
+		    set_servo_position(servoport, wp);
+	    }
+	    else
+	    {
+		    //increments the position
+		    op -= speed;  
+
+		    //sets the servo position to the incremented position
+		    set_servo_position(servoport, op);   
+		    msleep(100); 
+	    }
+        }   
+    }
+    else 
+    { 
+        while(wp > op)  
+        {   
+	    //if the position is less than one increment away from the wanted position
+	    if(wp - op < speed)
+	    {
+		    //just set the claw to the end position
+		   set_servo_position(servoport, op); 
+	    }
+	    else
+	    {
+		    //increments the position
+		    op += speed; 
+
+		    //sets the servo position to the incremented position
+		    set_servo_position(servoport, op);   
+		    msleep(100); 
+	    }
+        }   
+    } 
+}    
