@@ -5,13 +5,24 @@
 //TOOK OUT CLAW_SLIGHTLY_OPEN AND ARM_VERY_UP
 
 //FUNCTION DECLARATIONS
+
+//follows the edge of a line using a single ir sensor
 void line_follower(int runtime, int tape_benchmark);
 
+//follows the edge of a line backwards using a single ir sensor
 void reverse_line_follower(int runtime, int tape_benchmark);
 
+//determines if a building or medical center is on fire and returns a boolean value
 bool fire_scan(double red_benchmark);
 
+//moves a servo from one given position to another at a certain speed
 void servo_change(int op, int wp, int servoport, int speed);
+
+//turns the bot at a specified speed and time
+void turn(int time, int power, int port) ;
+
+//drives the bot forward for a certain time, with each motor able to spin at a different speed
+void drive(int time, int l_power, int r_power); 
 
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
@@ -271,3 +282,36 @@ void servo_change(int op, int wp, int servoport, int speed)
         }   
     } 
 }    
+
+//turns the bot at a specified speed and time
+//to turn left, call the right servo port 
+//to turn right, call the left servo port 
+//time- the larger the time the larger the degree of the turn
+//power- the power with which the wheel turns
+//port- the port of the motor turning
+void turn(int time, int power, int port) 
+{ 
+    //spins the motor at a certain power for a certain amount of time
+    mav(port, power); 
+	
+    //shuts off motors
+    msleep(time); 
+    ao();
+} 
+
+//drives the bot forward for a certain time, with each motor able to spin at a different speed
+//Use a negative power to drive backwards
+//l_power and r_power- the speed for the two different motors (allows for different motor rates)
+//time- the duration of driving
+void drive(int time, int l_power, int r_power) 
+{ 
+    //spins the left motor at a certain speed
+    motor(m_port_l, l_power); 
+	
+    //spins the left motor at a certain speed
+    motor(m_port_r, r_power); 
+    msleep(time); 
+	
+    //shuts off motors
+    ao(); 
+} 
