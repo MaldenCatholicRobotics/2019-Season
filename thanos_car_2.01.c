@@ -9,6 +9,8 @@ void line_follower(int runtime, int tape_benchmark);
 
 void reverse_line_follower(int runtime, int tape_benchmark);
 
+bool fire_scan(double red_benchmark);
+
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
 int m_port_l = 0;
@@ -44,9 +46,11 @@ int r_reg_speed = (0-1200);
 int r_fast_speed = (0-1600);
 int r_slow_speed = (0-800);
 
-//the values for the claw and arm positions
+//the values for the claw positions
 int claw_open = 1400;
 int claw_close = 550;
+
+//the values for the arm positions
 int arm_up = 800;
 int arm_down = 250;
 
@@ -144,3 +148,71 @@ void reverse_line_follower(int runtime, int tape_benchmark)
     //turns off motors
     ao();
 }
+
+//determines if a building or medical center is on fire and returns a boolean value
+//red_benchmark- the minimum average confidence for the building to be seen as on fire
+//a higher red_benchmark makes the function more selective
+bool fire_scan(double red_benchmark) 
+{ 
+    //create counter variables for the while loops
+    int counter_1 = 0; 
+    int counter_2 = 0;
+	
+    //creates variables to store values gathered by camera
+    double red_confidence; 
+    double red_total; 
+    double red_average; 
+
+    //configures and updates camera
+    camera_open_black(); 
+    camera_load_config("fire"); 
+    camera_update(); 
+
+    //one picture and about one tenth of a second per iteration
+    //creates a one second buffer period for the camera to set up
+    while(counter_1 < 10) 
+    { 
+        camera_update();
+        msleep(100);
+        counter_1++;
+    }   
+	
+    //creates a running tally of the confidence in each snapshot
+    while(counter_2 < num_pics)
+    {
+	//gets the confidence that the building is on fire
+        camera_update(); 
+        red_confidence = get_object_confidence(red_channel, 0);
+
+        //print statement for debugging
+        //printf("red_confidence: %f\n", red_confidence);
+
+        //adds the confidence to the running tally
+        red_total += red_confidence; 
+        msleep(100); 
+        counter_2++; 
+    }
+
+    //creates an average of all collected red_condifences
+    red_average = red_total/num_pics;  
+	
+    //closes the camera
+    camera_close(); 
+
+    //print statement for debugging
+    printf("red average:%f\n", red_average);   
+
+    //if building is on fire
+    if (red_average >= red_benchmark) 
+
+    { 
+        printf("FIRE\n");
+        return true; 
+    } 
+    //if building is not on fire
+    else 
+    { 
+        printf("SAFE\n");
+        return false; 
+    } 
+} 
