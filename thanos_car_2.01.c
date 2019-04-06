@@ -108,3 +108,39 @@ void line_follower(int runtime, int tape_benchmark)
     //turns off motors
     ao();
 }
+
+//follows the edge of a line backwards using a single ir sensor
+//runtime- the number of tenths of seconds the bot should follow the line
+//tape_benchmark- the ir value that decides if the sensor is on the tape or not
+void reverse_line_follower(int runtime, int tape_benchmark)
+{
+    //creates a temporary counter to control the while loop
+    int counter = 0;
+    //keeps the program running for a specified time
+    //runtime is multiplied by ten to account for 1/100 second iterations but 1/10 second inputs
+    while(counter <= 10*runtime)
+    {
+        //if sensor off tape
+        if(analog(f_ir_port) <= 3000)
+        {
+            //veer slightly left
+            mav(m_port_l, (0-1200));
+            mav(m_port_r, (0-1000));
+	    //checks position every 1/100 seconds
+            msleep(10);
+        }
+        //assumed that sensor is on tape
+        else
+        {
+            //veer slightly right
+            mav(m_port_l, (0-1000));
+            mav(m_port_r, (0-1200));
+            //checks position every 1/100 seconds
+            msleep(10);
+        }
+	//increments counter
+        counter++;
+    }
+    //turns off motors
+    ao();
+}
