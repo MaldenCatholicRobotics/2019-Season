@@ -24,6 +24,9 @@ void turn(int time, int power, int port) ;
 //drives the bot forward for a certain time, with each motor able to spin at a different speed
 void drive(int time, int l_power, int r_power); 
 
+//drives the bot in either direction until the ir sensor reaches the line
+void drive_until_line(int tape_benchmark, int l_power, int r_power);
+
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
 int m_port_l = 0;
@@ -138,7 +141,7 @@ void reverse_line_follower(int runtime, int tape_benchmark)
     while(counter <= 10*runtime)
     {
         //if sensor off tape
-        if(analog(f_ir_port) <= 3000)
+        if(analog(r_ir_port) <= 3000)
         {
             //veer slightly left
             mav(m_port_l, (0-1200));
@@ -315,3 +318,57 @@ void drive(int time, int l_power, int r_power)
     //shuts off motors
     ao(); 
 } 
+
+//drives the bot in either direction until the ir sensor reaches the line
+//Use a negative power to drive backwards
+//l_power and r_power- the speed at which the two motors drive (allows for different motor rates)
+//tape_benchmark- the analog values of the tape needed
+void drive_until_line(int tape_benchmark, int l_power, int r_power)
+{
+    //creates a  variable to kick the code out of the loop
+    int statement = 0; 
+    //while the bot has not reached the tape
+    while(statement == 0)
+    {
+	//if the bot should drive forwards
+	if(l_power > 0)
+	{
+		//if both sensors are off tape
+		if(analog(f_ir_port) <= tape_benchmark)
+		{
+		    //move straight
+		    mav(m_port_l, l_power);
+		    mav(m_port_r, r_power);
+		    msleep(10);
+		}
+		//the bot has reached the tape
+		else
+		{
+		    //kick the code out of the loop
+		    statement = 1;
+		    msleep(10);
+		}
+	}
+	//assumes the bot should drive forwards
+	else
+	{
+		//if both sensors are off tape
+		if(analog(r_ir_port) <= tape_benchmark)
+		{
+		    //move straight
+		    mav(m_port_l, l_power);
+		    mav(m_port_r, r_power);
+		    msleep(10);
+		}
+		//the bot has reached the tape
+		else
+		{
+		    //kick the code out of the loop
+		    statement = 1;
+		    msleep(10);
+		}
+	}
+    }
+    //shuts off motors
+    ao();
+}
