@@ -238,7 +238,6 @@ bool fire_scan(double red_benchmark)
 //wp- the ending positon of the servo
 //servoport- the port of the servo 
 //speed- the increment by which the servo position is repeatedly moved
-
 void servo_change(int op, int wp, int servoport, int speed) 
 {   
     //allows for the servo to change in any direction
@@ -251,6 +250,7 @@ void servo_change(int op, int wp, int servoport, int speed)
 	    {
 		    //just set the claw to the end position
 		    set_servo_position(servoport, wp);
+		    op = wp;
 	    }
 	    else
 	    {
@@ -272,6 +272,7 @@ void servo_change(int op, int wp, int servoport, int speed)
 	    {
 		    //just set the claw to the end position
 		   set_servo_position(servoport, op); 
+		    op = wp;
 	    }
 	    else
 	    {
