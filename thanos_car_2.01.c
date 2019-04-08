@@ -30,6 +30,9 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power);
 //finds which of the three buildings is on fire, stops in front of that building and saves the building number to the global variable
 void scan_buildings();
 
+//finds out which medical center is on fire and stores the center number in the variable
+void scan_centers();
+
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
 int m_port_l = 0;
@@ -432,3 +435,34 @@ void scan_buildings()
     ao();
 }
 
+//finds out which medical center is on fire and stores the center number in the variable
+//Starts: beginning of centers tape
+//Ends: In front of center 1
+void scan_centers()	
+{
+    //drives to center 1
+    line_follower(3, black_tape);
+
+    //scans center 1 for fire
+    if(fire_scan(fire_benchmark))
+    {
+        //center 1 is on fire
+        printf("Medical Center 1 is on fire!\n");
+	    
+	//sets variables regarding the centers
+        center_on_fire = 1;
+        safe_center = 2;
+    }
+
+    else
+    {
+        //Assumes that center 2 is on fire
+        printf("Medical Center 2 is on fire!\n"); 
+	    
+	//sets variables regarding the centers
+        center_on_fire = 2;
+        safe_center = 1;
+    }
+    //shuts off motors
+    ao();
+}
