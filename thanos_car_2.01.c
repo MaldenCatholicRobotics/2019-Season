@@ -2,7 +2,7 @@
 #include <stdbool.h>
 
 //Notes
-//TOOK OUT CLAW_SLIGHTLY_OPEN AND ARM_VERY_UP
+//
 
 //FUNCTION DECLARATIONS
 
@@ -32,6 +32,12 @@ void scan_buildings();
 
 //finds out which medical center is on fire and stores the center number in the variable
 void scan_centers();
+
+//picks up an object using the claw
+void collect_object();
+
+//puts a firefighter onto the skybridge
+void deliver_bridge()
 
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
@@ -71,6 +77,7 @@ int r_slow_speed = (0-800);
 //the values for the claw positions
 int claw_open = 1400;
 int claw_close = 550;
+int claw_release = 800;
 
 //the values for the arm positions
 int arm_up = 800;
@@ -466,3 +473,49 @@ void scan_centers()
     //shuts off motors
     ao();
 }
+
+//picks up an object using the claw
+//Starts: Arm up and claw closed
+//Ends: Arm up and claw closed
+void collect_object()
+{
+    //opens claw
+    servo_change(claw_close, claw_open, servo_port_claw, 30);
+	
+    //arms descends
+    servo_change(arm_up, arm_down, servo_port_arm, 30);
+	
+    //claw closes
+    servo_change(claw_open, claw_close, servo_port_claw, 30);
+	
+    //arm ascends
+    servo_change(arm_down, arm_up, servo_port_arm, 30);
+}
+
+//puts a firefighter onto the skybridge
+//Starts: in front of the on fire building
+//Ends: in front of the on fire building
+void deliver_bridge()
+{
+    //turn left so the bot is facing the skybridge
+    turn(turn_time, turn_power, m_port_r);
+    msleep(1000);
+	
+    //drive until the firefighter is just over the skybridge
+    drive(200, reg_speed, reg_speed);
+    msleep(1000);
+	
+    //slowly opens the claw to drop the firefighter onto the skybrdige
+    servo_change(claw_close, claw_release, servo_port_claw, 10);
+	
+    //drives back to the tape
+    drive(200, r_reg_speed, r_reg_speed);
+    msleep(1000);
+	
+    //turns back onto tape
+    turn(turn_time, turn_power, m_port_l);
+	
+    //closes claw
+    servo_change(claw_release, claw_close, servo_port_claw, 10);
+}
+
