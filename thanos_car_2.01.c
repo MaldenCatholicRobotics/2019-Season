@@ -27,6 +27,9 @@ void drive(int time, int l_power, int r_power);
 //drives the bot in either direction until the ir sensor reaches the line
 void drive_until_line(int tape_benchmark, int l_power, int r_power);
 
+//finds which of the three buildings is on fire, stops in front of that building and saves the building number to the global variable
+void scan_buildings();
+
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
 int m_port_l = 0;
@@ -373,3 +376,59 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
     //shuts off motors
     ao();
 }
+
+//finds which of the three buildings is on fire, stops in front of that building and saves the building number to the global variable
+//Starts: beginning of buildings tape
+//Ends: In front of on fire building
+void scan_buildings()
+{
+    //drives to building 1 with camera centered on where the fire patch could be
+    line_follower(18, black_tape);
+
+    //scans building 1 for fire
+    if(fire_scan(fire_benchmark))
+
+    {
+        //building 1 is on fire
+        printf("Building 1 is on fire!\n");
+	    
+	//sets variables regarding the buildings
+        building_on_fire = 1;
+        safe_building_left = 2;
+        safe_building_right = 3;
+    }
+
+    else
+    {
+        //building one is not on fire so bot drives to building 2
+        line_follower(12, black_tape);
+
+        //checks if building 2 is on fire
+        if(fire_scan(fire_benchmark))
+        {
+	    //building 2 is on fire
+            printf("Building 2 is on fire!\n");
+
+	    //sets variables regarding the buildings
+            building_on_fire = 2;
+            safe_building_left = 1;
+            safe_building_right = 3;
+        }
+        else
+        {
+            //assumes building 3 is on fire so bot drives to building 3
+            line_follower(12, black_tape);
+		
+            //building 3 is on fire
+            printf("Building 3 is on fire!\n"); 
+		
+	    //sets variables regarding the buildings
+            building_on_fire = 3;
+            safe_building_left = 1;
+            safe_building_right = 2;
+        }
+    }
+    //shuts off motors
+    ao();
+}
+
