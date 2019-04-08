@@ -546,14 +546,13 @@ void deliver_ground()
     //lifts up arm
     servo_change(arm_down, arm_up, servo_port_arm, 30);
     
+    //closes claw 
+    servo_change(claw_release, claw_close, servo_port_claw, 20);
+	
     //fully backs up
     drive(350, r_reg_speed, r_reg_speed);
     msleep(1000);
 	
     //turns back onto tape
-    turn(turn_time-100, turn_power, m_port_l);
-
-    //closes claw 
-    servo_change(claw_r claw_release, servo_port_claw, 20);
-    
+    turn(turn_time-100, turn_power, m_port_l);   
 }
