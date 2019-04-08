@@ -519,3 +519,41 @@ void deliver_bridge()
     servo_change(claw_release, claw_close, servo_port_claw, 10);
 }
 
+//puts an object in front of a building or medical center
+//Starts: in front of dropoff location
+//Ends: in front of dropoff location
+void deliver_ground()
+{
+    //follows the line backwards shortly
+    reverse_line_follower(5, black_tape);
+    msleep(1000);
+	
+    //turns to face the center
+    turn(turn_time, turn_power, m_port_r);	    
+    
+    //lowers claw to a down position
+    servo_change(arm_up, arm_down, servo_port_arm, 30);
+	
+    //inches up into middle of zone
+    drive(75, reg_speed, reg_speed);
+	
+    //slowly and slightly opens claw to release object
+    servo_change(claw_close, claw_release, servo_port_claw, 20);
+
+    //drives back up
+    drive(50, r_reg_speed, r_reg_speed);
+
+    //lifts up arm
+    servo_change(arm_down, arm_up, servo_port_arm, 30);
+    
+    //fully backs up
+    drive(350, r_reg_speed, r_reg_speed);
+    msleep(1000);
+	
+    //turns back onto tape
+    turn(turn_time-100, turn_power, m_port_l);
+
+    //closes claw 
+    servo_change(claw_r claw_release, servo_port_claw, 20);
+    
+}
