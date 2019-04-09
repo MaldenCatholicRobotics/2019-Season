@@ -57,6 +57,17 @@ void pole_to_buildings()
 //drives bot from medical centers to the firepole
 void centers_to_pole();
 
+//drives bot from the buildings to the firepole
+void buildings_to_pole();
+
+//drives back to start of centers tape from in front of on-fire center
+void return_centers_tape();
+
+//drives back to start of buildings tape from in front of on-fire building
+void return_buildings_tape();
+
+void opening_sequence();
+
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
 int m_port_l = 0;
@@ -709,6 +720,8 @@ void centers_to_pole()
 }
 
 //drives bot from the buildings to the firepole
+//Starts: start of buildings tape
+//Ends: start of poles tape
 void buildings_to_pole()
 {
     //turns left to strattle centers tape
@@ -727,3 +740,81 @@ void buildings_to_pole()
     drive(150, reg_speed, reg_speed);
     msleep(1000);
 }
+
+//drives back to start of centers tape from in front of on-fire center
+//Start: in front of on-fire center
+//Ends: start of centers tape
+void return_centers_tape()
+{
+	//if the first medical center is on fire
+	if(center_on_fire == 1)
+	{
+		//drive to start of centers tape
+		reverse_line_follower(5, black_tape);
+	}
+	//assumes the second medical center is on fire
+	else
+	{
+		//drives to start of centers tape
+		reverse_line_follower(10, black_tape);
+	}
+}
+
+	  
+//drives back to start of buildings tape from in front of on-fire building
+//Start: in front of on-fire_building
+//Ends: start of centers tape
+void return_buildings_tape()
+{
+	//if the first building is on fire
+	if(building_on_fire == 1)
+	{
+		//drive to start of buildings tape
+		reverse_line_follower(5, black_tape);
+	}
+	//else if the second building is on fire
+	else if(building_on_fire == 2)
+	{
+		//drive to start of buildings tape
+		reverse_line_follower(10, black_tape);
+	}
+	//assumes the third building is on fire
+	else
+	{
+		//drive to start of buildings tape
+		reverse_line_follower(15, black_tape);
+	}
+}
+	  
+//brings the bot from the box to the buildings
+//Starts: starting box
+//Ends: start of buildings tape
+//REWORK FOR CHANGE IN STARTING BOX POSITION
+void opening_sequence()
+{
+    //drives to left end of starting box
+    drive_until_line(3000, 1200, 1200);
+	
+    //turn onto left end of starting box
+    turn(turn_time, turn_power, m_port_l);
+	
+    //drives back to hover claw over firefighter
+    drive(50, r_reg_speed, r_reg_speed);
+	
+    //picks up the firefighter
+    collect_object();
+	
+    //drives past starting box edge
+    line_follower(3, black_tape);
+	
+    //drive to the buildings tape
+    drive(800, 1200, 1200);
+	
+    //turn onto the building tape
+    turn(turn_time, turn_power, m_port_l);
+    msleep(1000);
+	
+    //drive to the starting point of scan_buildings
+    reverse_line_follower(22, black_tape);
+    msleep(1000);
+}	  
