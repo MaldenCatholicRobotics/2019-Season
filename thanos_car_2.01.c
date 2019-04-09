@@ -651,3 +651,51 @@ void pole_to_centers()
     line_follower(2, black_tape);
     msleep(1000);
 }
+
+//drives the bot from the firepole to the buildings
+//Starts: start of pole tape
+//Ends: start of buildings tape
+void pole_to_buildings()
+{
+    //turns right to face tape in front of centers
+    turn(turn_time, turn_power, m_port_l);
+    msleep(1000);
+	
+    //drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
+    //use a combo of line following and straight up driving
+    drive(400, reg_speed, reg_speed);
+    line_follower(4, black_tape);
+    msleep(1000);
+	
+    //turn onto building tape
+    turn(turn_time, turn_power, m_port_l);
+    msleep(1000);
+}
+	  
+//drives bot from medical centers to the firepole
+void centers_to_pole()
+{
+    //turns right to strattle centers tape
+    turn(turn_time, turn_power, m_port_l);
+    msleep(1000);
+
+    //drives forward slightly
+    drive(200, reg_speed, reg_speed);
+    msleep(1000);
+	
+    //turns perpendicular to pole
+    turn(turn_time, turn_power, m_port_l);
+    msleep(1000);
+	
+    //drives to be straight across to pole
+    drive(500, reg_speed, reg_speed);
+    msleep(1000);
+	
+    //turns to face the pole
+    turn(turn_time, turn_power, m_port_l);
+    msleep(1000);
+
+    //drives up to the start of the pole tape
+    drive(250, reg_speed, reg_speed);
+    msleep(1000);
+}
