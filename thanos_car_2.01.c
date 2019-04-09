@@ -37,7 +37,10 @@ void scan_centers();
 void collect_object();
 
 //puts a firefighter onto the skybridge
-void deliver_bridge()
+void deliver_bridge();
+	
+//puts a firefighter on top of the medical center's roof
+void deliver_roof();
 
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
@@ -555,4 +558,41 @@ void deliver_ground()
 	
     //turns back onto tape
     turn(turn_time-100, turn_power, m_port_l);   
+}
+
+//puts a firefighter on top of the medical center's roof
+//Starts: start of centers tape
+//Ends: start of centers tape
+void deliver_roof()
+{
+     //follows the line backwards shortly
+     reverse_line_follower(6, black_tape);
+     msleep(1000);
+	
+     //turns to face the center
+     turn(turn_time, turn_power, m_port_r);
+     msleep(1000);
+	
+     //drives until the firefighter is just above the center
+     drive(100, reg_speed, reg_speed);
+     msleep(1000);
+	
+     //slowly and slightly opens claw to release firefighter onto roof
+     servo_change(claw_close, claw_release, servo_port_claw, 10);
+     msleep(1000);
+	
+     //drives backwards the same dstance it drove forwards
+     drive(250, r_reg_speed, r_reg_speed);
+     msleep(1000);
+     
+     //turns back onto centers tape
+     turn(turn_time, turn_power, m_port_l);
+     msleep(1000);
+	
+     //puts the claw back to the closed position
+     servo_change(claw_release, claw_close, servo_port_claw, 30);
+   
+     //drives back to start of centers tape
+     reverse_line_follower(1, black_tape);
+     msleep(1000);
 }
