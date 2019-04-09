@@ -52,7 +52,7 @@ void pull_firefighter();
 void pole_to_centers();
 
 //drives the bot from the firepole to the buildings
-void pole_to_buildings()
+void pole_to_buildings();
 
 //drives bot from medical centers to the firepole
 void centers_to_pole();
@@ -99,9 +99,9 @@ int fast_speed = 1600;
 int slow_speed = 800;
 
 //speeds for the bot to drive backwards
-int r_reg_speed = (0-1200);
-int r_fast_speed = (0-1600);
-int r_slow_speed = (0-800);
+int r_reg_speed = -1200;
+int r_fast_speed = -1600;
+int r_slow_speed = -800;
 
 //the values for the claw positions
 int claw_open = 1400;
@@ -120,6 +120,10 @@ int safe_building_left;
 //data collected by scan_centers function
 int center_on_fire;
 int safe_center;
+
+//booleans for if the on fire center/building is known
+bool center_fire_known = false;
+bool building_fire_known = false;
 
 //MAIN
 int main()
@@ -412,6 +416,7 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
 		}
 	}
     }
+	
     //shuts off motors
     ao();
 }
@@ -467,8 +472,12 @@ void scan_buildings()
             safe_building_right = 2;
         }
     }
+	
     //shuts off motors
     ao();
+	
+    //the center that is on fire is now know, so buildingss no longer need scanning	
+    building_fire_known = true;
 }
 
 //finds out which medical center is on fire and stores the center number in the variable
@@ -501,6 +510,9 @@ void scan_centers()
     }
     //shuts off motors
     ao();
+	
+    //the center that is on fire is now know, so centers no longer need scanning
+    center_fire_known = true;
 }
 
 //picks up an object using the claw
@@ -818,3 +830,19 @@ void opening_sequence()
     reverse_line_follower(22, black_tape);
     msleep(1000);
 }	  
+
+//puts a firefighter onto the right bridge
+//Starts: start of pole tape
+//Ends: start of building stape
+void right_bridge()
+{
+	if(building_fire_known)
+	{
+		if(building_on_fire == 1)
+		{
+			line_follower(5, black_tape);
+		}
+		else if(building_one_fire == 2)
+		{
+			line_follower(10, black_tape);
+		  
