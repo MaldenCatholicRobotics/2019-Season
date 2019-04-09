@@ -38,9 +38,18 @@ void collect_object();
 
 //puts a firefighter onto the skybridge
 void deliver_bridge();
+
+//puts an object in front of a building or medical center
+void deliver_ground();
 	
 //puts a firefighter on top of the medical center's roof
 void deliver_roof();
+
+//pulls out the bottom firefighter from the pole
+void pull_firefighter();
+
+//drives from the pole to the medical centers
+void pole_to_centers();
 
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
@@ -595,4 +604,50 @@ void deliver_roof()
      //drives back to start of centers tape
      reverse_line_follower(1, black_tape);
      msleep(1000);
+}
+
+//pulls out the bottom firefighter from the pole
+//Starts: in front of pole
+//Ends: in front of pole
+void pull_firefighter()
+{
+    //opens claw
+    servo_change(claw_close, claw_open, servo_port_claw, 30);
+	
+    //lowers arm to ground level
+    servo_change(arm_up, arm_down, servo_port_arm, 30);
+	
+    //drives up to surround firefighter
+    drive(250, reg_speed, reg_speed);
+    msleep(1000);
+	
+    //claw closes around firefighter, securing it
+    servo_change(claw_open, claw_close, servo_port_claw, 20);
+    msleep(1000);
+	
+    //bot drives backwards with firefighter past the pole tape
+    //possibly make some of it line following for corrections
+    drive(1000, r_reg_speed, (r_reg_speed);
+	
+    //arm lifts up with firefighter in it
+    servo_change(arm_down, arm_up, servo_port_arm, 20);
+	  
+    //drives back up to the pole tape
+    drive_to_line(black_tape, reg_speed, reg_speed);
+}
+	 
+//drives from the pole to the medical centers
+//Starts: start of pole tape
+//Ends: start of centers tape
+void pole_to_centers()
+{
+    //turns right to face tape in front of centers
+    turn(turn_time, turn_power, m_port_l);
+    msleep(1000);
+	
+    //drives up to tape in front of centers in position to scan centers/ deliver firefighter/go to buildings
+    //use a combo of line following and straight up driving
+    drive(300, reg_speed, reg_speed);
+    line_follower(2, black_tape);
+    msleep(1000);
 }
