@@ -51,6 +51,12 @@ void pull_firefighter();
 //drives from the pole to the medical centers
 void pole_to_centers();
 
+//drives the bot from the firepole to the buildings
+void pole_to_buildings()
+
+//drives bot from medical centers to the firepole
+void centers_to_pole();
+
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
 int m_port_l = 0;
@@ -673,6 +679,8 @@ void pole_to_buildings()
 }
 	  
 //drives bot from medical centers to the firepole
+//Starts: start of centers tape
+//Ends: start of pole tape
 void centers_to_pole()
 {
     //turns right to strattle centers tape
@@ -697,5 +705,25 @@ void centers_to_pole()
 
     //drives up to the start of the pole tape
     drive(250, reg_speed, reg_speed);
+    msleep(1000);
+}
+
+//drives bot from the buildings to the firepole
+void buildings_to_pole()
+{
+    //turns left to strattle centers tape
+    turn(turn_time, turn_power, m_port_r);
+    msleep(1000);
+	
+    //drive to start of fire station tape
+    drive(1400, r_reg_speed, r_reg_speed);
+    msleep(1000);
+	
+    //turns left to face the firepole
+    turn(turn_time, turn_power, m_port_r);	
+    msleep(1000);
+  
+    //drive up to start of buildings tape
+    drive(150, reg_speed, reg_speed);
     msleep(1000);
 }
