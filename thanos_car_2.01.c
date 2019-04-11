@@ -66,7 +66,23 @@ void return_centers_tape();
 //drives back to start of buildings tape from in front of on-fire building
 void return_buildings_tape();
 
+//brings the bot from the box to the buildings
 void opening_sequence();
+
+//puts a firefighter onto the right bridge of the on-fire building
+void right_bridge();
+
+//puts a firefighter onto the left bridge of the on-fire building
+void left_bridge();
+
+//puts a firefighter onto the roof of the on-fire center
+void roof();
+
+//puts a firefighter onto the ground of the on-fire building
+void building_ground();
+
+//puts a firefighter onto the ground of the on-fire center
+void center_ground();
 
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
@@ -832,8 +848,8 @@ void opening_sequence()
 }	  
 
 //puts a firefighter onto the right bridge of the on-fire building
-//Starts: start of pole tape
-//Ends: start of building stape
+//Starts: start of buildings tape
+//Ends: start of buildings stape
 void right_bridge()
 {
 	//if the bot knows which building is on fire
@@ -868,6 +884,50 @@ void right_bridge()
 	return_buildings_tape();
 }
 
+	  
+//puts a firefighter onto the left bridge of the on-fire building
+//Starts: start of buildings tape
+//Ends: start of buildings stape
+void left_bridge()
+{
+	//if the bot knows which building is on fire
+	if(building_fire_known)
+	{
+		//drive to building 1
+		if(building_on_fire == 1)
+		{
+			line_follower(5, black_tape);
+		}		
+		else if(building_one_fire == 2)
+		{
+			//drive to building 2
+			line_follower(10, black_tape);
+		}
+		else
+		{
+			//drive to building 3
+			line_follower(15, black_tape);
+		}
+	}
+	else
+	{
+		//stops in front of on fire building
+		scan_buildings();
+	}
+	
+	//drives back to align with left bridge
+	reverse_line_follower(5, black_tape);
+	
+	//puts firefighter onto the bridge
+	deliver_bridge();
+	
+	//undoes left bridge reverse movement
+	line_follower(5, black_tape);
+	
+	//goes back to the start of the buildings tape
+	return_buildings_tape();
+}
+	  
 //puts a firefighter onto the roof of the on-fire center
 //Start: start of centers tape
 //Ends: start of centers tape
@@ -900,4 +960,73 @@ void roof()
 	//returns to start of the center tape
 	return_centers_tape();
 }
-		
+
+//puts a firefighter onto the ground of the on-fire building
+//Starts: start of buildings tape
+//Ends: start of buildings stape
+void building_ground()
+{
+	//if the bot knows which building is on fire
+	if(building_fire_known)
+	{
+		//drive to building 1
+		if(building_on_fire == 1)
+		{
+			line_follower(5, black_tape);
+		}		
+		else if(building_one_fire == 2)
+		{
+			//drive to building 2
+			line_follower(10, black_tape);
+		}
+		else
+		{
+			//drive to building 3
+			line_follower(15, black_tape);
+		}
+	}
+	else
+	{
+		//stops in front of on fire building
+		scan_buildings();
+	}
+	
+	//puts firefighter onto the ground
+	deliver_ground();
+	
+	//goes back to the start of the buildings tape
+	return_buildings_tape();
+}
+	  
+//puts a firefighter onto the ground of the on-fire center
+//Starts: start of centers tape
+//Ends: start of center stape
+void center_ground()
+{
+	//if the bot knows which center is on fire
+	if(centers_fire_known)
+	{
+		//if the first center is on fire
+		if(center_one_fire == 1)
+		{
+			//drives to first center
+			line_follower(5, black_tape);
+		}
+		else
+		{
+			//drives to second center
+			line_follower(10, black_tape);
+		}
+	}
+	else
+	{
+		//find which center is on fire and stop in front of it
+		scan_centers();
+	}
+	
+	//puts firefighter onto the ground
+	deliver_ground();
+	
+	//goes back to the start of the buildings tape
+	return_centers_tape();
+}
