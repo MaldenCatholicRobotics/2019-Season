@@ -141,6 +141,11 @@ int safe_center;
 bool center_fire_known = false;
 bool building_fire_known = false;
 
+//variables to finetune the line following
+//QUICK_CORRECT + STRAIGHTEN_CORRECT MUST = 10
+int quick_correct = 8;
+int straighten_correct = 2;
+
 //MAIN
 int main()
 
@@ -160,11 +165,11 @@ int main()
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
 void line_follower(int runtime, int tape_benchmark)
 {
-    //creates a temporary counter to control the while loop
-    int counter = 0;
+    //creates temporary counters to control the while loops
+    int counter1 = 0;
+    int counter 2 = 0;
     //keeps the program running for a specified time
-    //runtime is multiplied by ten to account for 1/100 second iterations but 1/10 second inputs
-    while(counter <= 10*runtime)
+    while(counter1 <= quick_correct*runtime)
     {
         //if sensor on tape
         if(analog(f_ir_port) >= 3000)
@@ -185,7 +190,32 @@ void line_follower(int runtime, int tape_benchmark)
             msleep(10);
         }
 	//increments counter
-        counter++;
+        counter1++;
+    }
+	
+    //keeps the program running for a specified time
+    while(counter2 <= straighten_correct*runtime)
+    {
+        //if sensor on tape
+        if(analog(f_ir_port) >= 3000)
+        {
+            //veer slightly left
+            mav(m_port_l, 1200);
+            mav(m_port_r, 1150);
+	    //checks position every 1/100 seconds
+            msleep(10);
+        }
+        //assumed that sensor is off tape
+        else
+        {
+            //veer slightly right
+            mav(m_port_l, 1150);
+            mav(m_port_r, 1200);
+            //checks position every 1/100 seconds
+            msleep(10);
+        }
+	//increments counter
+        counter2++;
     }
     //turns off motors
     ao();
@@ -196,32 +226,57 @@ void line_follower(int runtime, int tape_benchmark)
 //tape_benchmark- the ir value that decides if the sensor is on the tape or not
 void reverse_line_follower(int runtime, int tape_benchmark)
 {
-    //creates a temporary counter to control the while loop
-    int counter = 0;
+    //creates temporary counters to control the while loops
+    int counter1 = 0;
+    int counter 2 = 0;
     //keeps the program running for a specified time
-    //runtime is multiplied by ten to account for 1/100 second iterations but 1/10 second inputs
-    while(counter <= 10*runtime)
+    while(counter1 <= quick_correct*runtime)
     {
-        //if sensor off tape
-        if(analog(r_ir_port) <= 3000)
+        //if sensor on tape
+        if(analog(r_ir_port) >= 3000)
         {
             //veer slightly left
-            mav(m_port_l, (0-1200));
-            mav(m_port_r, (0-1000));
+            mav(m_port_l, -1200);
+            mav(m_port_r, -1000);
 	    //checks position every 1/100 seconds
             msleep(10);
         }
-        //assumed that sensor is on tape
+        //assumed that sensor is off tape
         else
         {
             //veer slightly right
-            mav(m_port_l, (0-1000));
-            mav(m_port_r, (0-1200));
+            mav(m_port_l, -1000);
+            mav(m_port_r, -1200);
             //checks position every 1/100 seconds
             msleep(10);
         }
 	//increments counter
-        counter++;
+        counter1++;
+    }
+	
+    //keeps the program running for a specified time
+    while(counter2 <= straighten_correct*runtime)
+    {
+        //if sensor on tape
+        if(analog(r_ir_port) >= 3000)
+        {
+            //veer slightly left
+            mav(m_port_l, -1200);
+            mav(m_port_r, -1150);
+	    //checks position every 1/100 seconds
+            msleep(10);
+        }
+        //assumed that sensor is off tape
+        else
+        {
+            //veer slightly right
+            mav(m_port_l, -1150);
+            mav(m_port_r, -1200);
+            //checks position every 1/100 seconds
+            msleep(10);
+        }
+	//increments counter
+        counter2++;
     }
     //turns off motors
     ao();
