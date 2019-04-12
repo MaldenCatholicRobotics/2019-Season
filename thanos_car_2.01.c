@@ -672,7 +672,7 @@ void pull_firefighter()
 	
     //bot drives backwards with firefighter past the pole tape
     //possibly make some of it line following for corrections
-    drive(1000, r_reg_speed, (r_reg_speed);
+    drive(1000, r_reg_speed, r_reg_speed);
 	
     //arm lifts up with firefighter in it
     servo_change(arm_down, arm_up, servo_port_arm, 20);
@@ -860,7 +860,7 @@ void right_bridge()
 		{
 			line_follower(5, black_tape);
 		}		
-		else if(building_one_fire == 2)
+		else if(building_on_fire == 2)
 		{
 			//drive to building 2
 			line_follower(10, black_tape);
@@ -898,7 +898,7 @@ void left_bridge()
 		{
 			line_follower(5, black_tape);
 		}		
-		else if(building_one_fire == 2)
+		else if(building_on_fire == 2)
 		{
 			//drive to building 2
 			line_follower(10, black_tape);
@@ -934,10 +934,10 @@ void left_bridge()
 void roof()
 {
 	//if the bot knows which center is on fire
-	if(centers_fire_known)
+	if(center_fire_known)
 	{
 		//if the first center is on fire
-		if(center_one_fire == 1)
+		if(center_on_fire == 1)
 		{
 			//drives to first center
 			line_follower(5, black_tape);
@@ -974,7 +974,7 @@ void building_ground()
 		{
 			line_follower(5, black_tape);
 		}		
-		else if(building_one_fire == 2)
+		else if(building_on_fire == 2)
 		{
 			//drive to building 2
 			line_follower(10, black_tape);
@@ -1004,10 +1004,10 @@ void building_ground()
 void center_ground()
 {
 	//if the bot knows which center is on fire
-	if(centers_fire_known)
+	if(center_fire_known)
 	{
 		//if the first center is on fire
-		if(center_one_fire == 1)
+		if(center_on_fire == 1)
 		{
 			//drives to first center
 			line_follower(5, black_tape);
