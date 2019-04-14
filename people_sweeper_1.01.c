@@ -40,6 +40,10 @@ int lower_down = ;
 int upper_up = ;
 int upper_down = ;
 
+//data collected by bot
+int on_fire_center;
+int safe_center;
+
 //FUNCTIONS
 
 //moves a servo from one given position to another at a certain speed
