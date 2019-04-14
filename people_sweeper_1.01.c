@@ -25,6 +25,11 @@ int r_reg_speed = -1200;
 int slow_speed = 600;
 int r_slow_speed = -600;
 
+//for the line follower runtime breakdowns
+//MUST ADD UP TO 10
+int quick_correct = 8;
+int straighten_correct = 2;
+
 //servo ports
 int lower_servo_port = ;
 int upper_servo_port = 0;
@@ -124,16 +129,6 @@ void drive(int time, int l_power, int r_power)
     //shuts off motors
     ao(); 
 } 
-
-//turns the bot around by spinning one wheel backwards and one forwards
-void turnArd( int time, int l_power, int r_r_power)
-{
-    mav( 3, l_power);
-    mav( 2, r_r_power);
-    msleep(time);
-    ao();
-}
-
 
 //follows the edge of a line using a single ir sensor
 //runtime- the number of tenths of seconds the bot should follow the line
@@ -325,10 +320,6 @@ bool fire_scan(double red_benchmark)
     } 
 } 
 
-
-
-
-
 int main()
 {
     enable_servos();
@@ -349,6 +340,7 @@ int main()
     //turns to face center
     turn(1300, reg_speed, m_port_l);
     
+    //if the center is on fire
     if(fire_scan(red_benchmark))
     {
 	//drives backwards
@@ -360,8 +352,6 @@ int main()
     {
 	    
     }
-    
-    printf("program over");
     
     //makes robot get into position for scn med. cent.
     //turnLeft(900, l_port, reg_speed);
