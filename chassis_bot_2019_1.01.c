@@ -474,21 +474,55 @@ void scan_centers()
     ao();
 }
 
+//puts an object in front of the not on-fire medical center
+//Start: in front of medical center 1
+//Ends: in front of medical center 1
 void deliver()
 {
   
 }
 
+//goes from starting box to start of centers tape while grabbing the ambulance
+//Starts: Starting position
+//Ends: in front of medical center 1
 void opening_sequence()
 {
-  
+	//drive so sweeper is over ambulance
+	drive(500, reg_speed, reg_speed);
+	
+	//put sweeper down over ambulance
+	servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
+	
+	//drive past the starting box tape
+	drive(500, reg_speed, reg_speed);
+	
+	//drive up to the buildings tape
+	drive_until_line(black_tape, reg_speed, reg_speed);
+	
+	//turn left onto the buildings tape
+	turn(turn_time, turn_power, m_port_r);
+	
+	//follow the buildings tape to its start
+	line_follower(30, black_tape);
+	
+	//turns right onto the centers tape
+	turn(turn_time, turn_power, m_port_l);
+	
+	//line follows to in front of medical center 1
+	reverse_line_follower(10, black_tape);
 }
 
+//determines on-fire center and puts ambulance on the other center
+//Starts: in front of medical center 1
+//Ends: Start of building tape
 void ambulance()
 {
   
 }
 
+//grabs a set of 6 people and puts them in front of not on-fire medical center
+//Starts: Start of building tape
+//Ends: Start of building tape
 void people(int x)
 {
   
