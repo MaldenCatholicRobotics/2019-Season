@@ -27,17 +27,11 @@ void drive(int time, int l_power, int r_power);
 //drives the bot in either direction until the ir sensor reaches the line
 void drive_until_line(int tape_benchmark, int l_power, int r_power);
 
-//puts an object in front of the not on-fire medical center
-void deliver();
-
 //goes from starting box to start of centers tape while grabbing the ambulance
 void opening_sequence();
 
-//determines on-fire center and puts ambulance on the other center
-void ambulance();
-
-//grabs a set of 6 people and puts them in front of not on-fire medical center
-void people(int set);
+//Runs the main body of the code
+void main_function();
 
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
@@ -85,10 +79,6 @@ int sweeper_down = 0;
 int sweeper_start = 880;
 int sweeper_grab = 275;
 
-//data collected by scan_centers function
-int center_on_fire;
-int safe_center;
-
 //variables to finetune the line following
 //QUICK_CORRECT + STRAIGHTEN_CORRECT MUST = 10
 int quick_correct = 8;
@@ -101,17 +91,9 @@ int main()
     enable_servos();
     //sets inital claw position to up and closed	  
     set_servo_position(servo_port_scooper, scooper_up);
-    set_servo_position(servo_port_sweeper, sweeper_down);
-    servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
-    msleep(1000);
-    drive(1200, reg_speed, reg_speed);
-    servo_change(sweeper_grab, sweeper_down, servo_port_sweeper, 30);
-    servo_change(scooper_up, scooper_down, servo_port_scooper, 30);
-    drive(2000, r_reg_speed, r_reg_speed);
-    turn(turn_time, turn_power, m_port_r);
+    set_servo_position(servo_port_sweeper, sweeper_start);   
     opening_sequence();
-    ambulance();
-    people(0);
+    main_code();
     disable_servos();
     return 0;
 }
@@ -451,50 +433,7 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
     ao();
 }
 
-//finds out which medical center is on fire and stores the center number in the variable
-//Starts: beginning of centers tape
-//Ends: In front of center 1
-void scan_centers()	
-{
-    //drives to center 1
-    line_follower(3, black_tape);
-
-    //scans center 1 for fire
-    if(fire_scan(fire_benchmark))
-    {
-        //center 1 is on fire
-        printf("Medical Center 1 is on fire!\n");
-	    
-	      //sets variables regarding the centers
-        center_on_fire = 1;
-        safe_center = 2;
-    }
-
-    else
-    {
-        //Assumes that center 2 is on fire
-        printf("Medical Center 2 is on fire!\n"); 
-	    
-	      //sets variables regarding the centers
-        center_on_fire = 2;
-        safe_center = 1;
-    }
-  
-    //shuts off motors
-    ao();
-}
-
-//puts an object in front of the not on-fire medical center
-//Start: in front of medical center 1
-//Ends: in front of medical center 1
-void deliver()
-{
-  
-}
-
 //goes from starting box to start of centers tape while grabbing the ambulance
-//Starts: Starting position
-//Ends: in front of medical center 1
 void opening_sequence()
 {
 	msleep(1000);
@@ -517,60 +456,117 @@ void opening_sequence()
 	turn(turn_time-100, turn_power, m_port_l);
 }
 
-//determines on-fire center and puts ambulance on the other center
-//Starts: in front of medical center 1
-//Ends: Start of building tape
-void ambulance()
+//Runs the main body of the code
+void main_function()
 {
+	//if the first center is on fire
 	if(fire_scan(fire_benchmark))
     {
-        printf("Center 1 is on fire!");
+	//drives up to the second center
         drive(200, reg_speed, reg_speed);
+	
+	//turn so amulance is in front of the second center
         turn(1200, turn_power, m_port_r); 
+	
+	//lifts sweeper arm clear over ambulance
         servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
         msleep(1000);
+	
+	//backs up so the front bar of the sweeper is behind the ambulance
         drive(1000, r_reg_speed, r_reg_speed);
+	
+	//puts down the sweeper
         servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
+	
+	//pushes the ambulance deeper into the second center's box
         drive(1200, reg_speed, reg_speed);
+	
+	//backs out of the zone
         drive(500, r_reg_speed, r_reg_speed);
+	
+	//turns to be parallel with centers tape
         turn(700, turn_power, m_port_l);
+		
+	//backs up until perpendicular with buildngs tape
         drive(700, r_reg_speed, r_reg_speed);
+	
+	//turns onto the buildings tape
         turn(turn_time, turn_power, m_port_l);        
     }
     else
     {
-        printf("Center 2 is on fire!");
+	//turns part of the way to face center 1
         turn(1000, turn_power, m_port_r);
+	    
+	//backs up to clear center and prevent crashing
         drive(1000, r_reg_speed, r_reg_speed);
+	    
+	//turns to fully face the center
         turn(300, turn_power, m_port_r);
+	    
+	//raises sweeper clear of the ambulance
         servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
+	    
+	//drives backwards so front bar of sweeper is behind the ambulance
         drive(500, r_reg_speed, r_reg_speed);
+	
+	//puts sweeper down
         servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
+	    
+	//pushes the ambulance deeper into the zone
         drive(1200, reg_speed, reg_speed);
+	    
+	//backs up slightly
         drive(200, r_reg_speed, r_reg_speed);
+	    
+	//turns right partially to get onto buildings tape
         turn(turn_time, turn_power, m_port_l);
         msleep(1000);
+	   
+	//backs up for clearance
         drive(200, r_reg_speed, r_reg_speed);
         msleep(1000);
+	
+	//finishes the turn onto the buildings tape
         turn(turn_time-200, turn_power, m_port_l);
         msleep(1000);
+	
+	//line follows up to the first row of people
         line_follower(5, black_tape);
         msleep(1000);
+	    
+	//turns partislly left to face the people
         turn(turn_time, turn_power, m_port_r);
         msleep(1000);
+	
+	//backs up for clearance
         drive(200, r_reg_speed, r_reg_speed);
         msleep(1000);
+	
+	//finishes the turn
         turn(200, turn_power, m_port_r);
-        servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
+	
+	//readies the sweeper to grab the people
+	servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
         msleep(1000);
-        drive(1000, reg_speed, reg_speed);
+	
+	//drives under the skybridge to hover over the people
+        drive(1200, reg_speed, reg_speed);
+	    
+	//puts the sweeper down
+        servo_change(sweeper_grab, sweeper_down, servo_port_sweeper, 30);
+	
+	//scooper knocks down the people on top
+        servo_change(scooper_up, scooper_down, servo_port_scooper, 30);
+	
+	//backs up to the buildings tape
+	//top row of people is knocked over and falls into the sweeper
+        drive(2000, r_reg_speed, r_reg_speed);
+	
+	//turns to face center 1
+        turn(turn_time, turn_power, m_port_r);
+	
+	//drives so sweeper is in center 1
+	drive(2000, reg_speed, reg_speed);
     }
-}
-
-//grabs a set of 6 people and puts them in front of not on-fire medical center
-//Starts: Start of building tape
-//Ends: Start of building tape
-void people(int x)
-{
-  
 }
