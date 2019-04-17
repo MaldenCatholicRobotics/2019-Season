@@ -31,7 +31,7 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power);
 void opening_sequence();
 
 //Runs the main body of the code
-void main_function();
+void body();
 
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
@@ -77,7 +77,7 @@ int scooper_down = 1600;
 int sweeper_up = 400;
 int sweeper_down = 0;
 int sweeper_start = 880;
-int sweeper_grab = 275;
+int sweeper_grab = 300;
 
 //variables to finetune the line following
 //QUICK_CORRECT + STRAIGHTEN_CORRECT MUST = 10
@@ -93,7 +93,7 @@ int main()
     set_servo_position(servo_port_scooper, scooper_up);
     set_servo_position(servo_port_sweeper, sweeper_start);   
     opening_sequence();
-    main_code();
+    body();
     disable_servos();
     return 0;
 }
@@ -442,22 +442,33 @@ void opening_sequence()
 	servo_change(sweeper_start, sweeper_down, servo_port_sweeper, 30);
 	
 	//drive past the starting box tape
-	drive(2000, reg_speed, reg_speed);
-	msleep(1000);
-	
-	//turn left onto the buildings tape
-	turn(turn_time+500, turn_power, m_port_r);
-	
-	//follow the buildings tape to its start
-	line_follower(24, black_tape);
+	drive(800, reg_speed+100, reg_speed);
 	msleep(1000);
     
+    servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
+    //turn(200, turn_power, m_port_r);
+    drive(250, reg_speed, reg_speed);
+    msleep(1000);
+    servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
+    
+    drive(650, reg_speed, reg_speed);
+    msleep(1000);
+	//turn left onto the buildings tape
+	turn(turn_time+300, turn_power, m_port_r);
+	
+	//follow the buildings tape to its start
+	line_follower(11, black_tape);
+	msleep(1000);
+    servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
+    line_follower(2, black_tape);
+    servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
+    line_follower(11, black_tape);
 	//turns right onto the centers tape
 	turn(turn_time-100, turn_power, m_port_l);
 }
 
 //Runs the main body of the code
-void main_function()
+void body()
 {
 	//if the first center is on fire
 	if(fire_scan(fire_benchmark))
@@ -491,7 +502,43 @@ void main_function()
         drive(700, r_reg_speed, r_reg_speed);
 	
 	//turns onto the buildings tape
-        turn(turn_time, turn_power, m_port_l);        
+        turn(turn_time-250, turn_power, m_port_l);    
+        servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
+        line_follower(19, black_tape);
+        reverse_line_follower(15, black_tape);
+        turn(turn_time-210, turn_power, m_port_r);
+        msleep(1000);
+        //drives under the skybridge to hover over the people
+        drive(1000, reg_speed, reg_speed);
+	    
+	//puts the sweeper down
+        servo_change(sweeper_grab, sweeper_down, servo_port_sweeper, 30);
+	
+	//scooper knocks down the people on top
+        servo_change(scooper_up, scooper_down, servo_port_scooper, 30);
+	
+	//backs up to the buildings tape
+	//top row of people is knocked over and falls into the sweeper
+        drive(1500, r_reg_speed, r_reg_speed);
+        
+        turn(turn_time/2+200, turn_power, m_port_r);
+        
+        drive(1300, reg_speed, reg_speed);
+        
+        //raises sweeper clear of the ambulance
+        servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
+	    
+	drive(1100, r_reg_speed, r_reg_speed);
+	
+	//puts sweeper down
+        servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
+	    
+	//pushes the ambulance deeper into the zone
+        drive(1400, reg_speed, reg_speed);
+	    
+	//backs up slightly
+        drive(200, r_reg_speed, r_reg_speed);
+        
     }
     else
     {
@@ -527,28 +574,25 @@ void main_function()
         drive(200, r_reg_speed, r_reg_speed);
         msleep(1000);
 	
+        //readies the sweeper to grab the people
+	servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
+        msleep(1000);
+        
 	//finishes the turn onto the buildings tape
-        turn(turn_time-200, turn_power, m_port_l);
+        turn(turn_time-400, turn_power, m_port_l);
         msleep(1000);
 	
 	//line follows up to the first row of people
-        line_follower(5, black_tape);
+        line_follower(20, black_tape);
         msleep(1000);
+        reverse_line_follower(15, black_tape);
 	    
-	//turns partislly left to face the people
-        turn(turn_time, turn_power, m_port_r);
+	//turns partially left to face the people
+        turn(turn_time-300, turn_power, m_port_r);
         msleep(1000);
 	
-	//backs up for clearance
-        drive(200, r_reg_speed, r_reg_speed);
-        msleep(1000);
+
 	
-	//finishes the turn
-        turn(200, turn_power, m_port_r);
-	
-	//readies the sweeper to grab the people
-	servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
-        msleep(1000);
 	
 	//drives under the skybridge to hover over the people
         drive(1200, reg_speed, reg_speed);
@@ -561,12 +605,26 @@ void main_function()
 	
 	//backs up to the buildings tape
 	//top row of people is knocked over and falls into the sweeper
-        drive(2000, r_reg_speed, r_reg_speed);
+        drive(2400, r_reg_speed, r_reg_speed);
 	
 	//turns to face center 1
-        turn(turn_time, turn_power, m_port_r);
+        turn(turn_time-100, turn_power, m_port_r);
 	
 	//drives so sweeper is in center 1
-	drive(2000, reg_speed, reg_speed);
+	drive(700, reg_speed, reg_speed);
+        msleep(1000);
+        //raises sweeper clear of the ambulance
+        servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
+	    
+	reverse_line_follower(11, black_tape);
+	
+	//puts sweeper down
+        servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
+	    
+	//pushes the ambulance deeper into the zone
+        drive(1400, reg_speed, reg_speed);
+	    
+	//backs up slightly
+        drive(200, r_reg_speed, r_reg_speed);
     }
 }
