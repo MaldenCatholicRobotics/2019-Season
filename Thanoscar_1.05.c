@@ -436,33 +436,46 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
 //goes from starting box to start of centers tape while grabbing the ambulance
 void opening_sequence()
 {
-	msleep(1000);
-    
 	//put sweeper down over ambulance
 	servo_change(sweeper_start, sweeper_down, servo_port_sweeper, 30);
 	
 	//drive past the starting box tape
 	drive(800, reg_speed+100, reg_speed);
 	msleep(1000);
+	
+    	//puts the claw up to grab first set of medical supplies
+    	servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
+	
+	//drive over the medical supplies
+    	drive(250, reg_speed, reg_speed);
+    	msleep(1000);
+	
+	//puts sweeper down over the supplies
+    	servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
     
-    servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
-    //turn(200, turn_power, m_port_r);
-    drive(250, reg_speed, reg_speed);
-    msleep(1000);
-    servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
-    
-    drive(650, reg_speed, reg_speed);
-    msleep(1000);
+	//drives over the buildings tape
+    	drive(650, reg_speed, reg_speed);
+    	msleep(1000);
+	
 	//turn left onto the buildings tape
 	turn(turn_time+300, turn_power, m_port_r);
 	
-	//follow the buildings tape to its start
+	//follow the buildings tape until front of sweeper is just behind the medical supplies
 	line_follower(11, black_tape);
 	msleep(1000);
-    servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
-    line_follower(2, black_tape);
-    servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
-    line_follower(11, black_tape);
+	
+	//puts the sweeper up
+    	servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
+	
+	//drives until sweeper is over the supplies
+    	line_follower(2, black_tape);
+	
+	//puts sweeper down over the supplies
+   	 servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
+	
+	//line follows to the end of the buildings tape
+    	line_follower(11, black_tape);
+	
 	//turns right onto the centers tape
 	turn(turn_time-100, turn_power, m_port_l);
 }
@@ -503,11 +516,20 @@ void body()
 	
 	//turns onto the buildings tape
         turn(turn_time-250, turn_power, m_port_l);    
+	
+	//puts the sweeper up so it doesn't get caught on tape
         servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
+		
+	//line follows forward to prepare for correction
         line_follower(19, black_tape);
+		
+	//line follows bakcwards to correct position
         reverse_line_follower(15, black_tape);
-        turn(turn_time-210, turn_power, m_port_r);
+	
+	//turns to face the row of people
+	turn(turn_time-210, turn_power, m_port_r);
         msleep(1000);
+		
         //drives under the skybridge to hover over the people
         drive(1000, reg_speed, reg_speed);
 	    
@@ -521,19 +543,22 @@ void body()
 	//top row of people is knocked over and falls into the sweeper
         drive(1500, r_reg_speed, r_reg_speed);
         
+	//turns to face the corner of center 2
         turn(turn_time/2+200, turn_power, m_port_r);
         
+	//drives so sweeper is in center 2
         drive(1300, reg_speed, reg_speed);
         
         //raises sweeper clear of the ambulance
         servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
 	    
+	//backs up to prepare for sweeping people
 	drive(1100, r_reg_speed, r_reg_speed);
 	
 	//puts sweeper down
         servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
 	    
-	//pushes the ambulance deeper into the zone
+	//pushes the people deeper into the zone
         drive(1400, reg_speed, reg_speed);
 	    
 	//backs up slightly
@@ -591,9 +616,6 @@ void body()
         turn(turn_time-300, turn_power, m_port_r);
         msleep(1000);
 	
-
-	
-	
 	//drives under the skybridge to hover over the people
         drive(1200, reg_speed, reg_speed);
 	    
@@ -613,15 +635,17 @@ void body()
 	//drives so sweeper is in center 1
 	drive(700, reg_speed, reg_speed);
         msleep(1000);
+	    
         //raises sweeper clear of the ambulance
         servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
-	    
+	  
+	//drive back to prepare to push people
 	reverse_line_follower(11, black_tape);
 	
 	//puts sweeper down
         servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
 	    
-	//pushes the ambulance deeper into the zone
+	//pushes the people deeper into the zone
         drive(1400, reg_speed, reg_speed);
 	    
 	//backs up slightly
