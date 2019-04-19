@@ -49,6 +49,7 @@ void body();
 //ports of the servos, motors and ir sensors
 int m_port_l = 2;
 int m_port_r = 3;
+int start_light = 3;
 int f_ir_port = 0;
 int r_ir_port = 1; 
 int s_ir_port = 2;
@@ -101,6 +102,8 @@ int straighten_correct = 2;
 int main()
 
 {
+    //wait_for_light(start_light);
+    shut_down_in(119); 
     enable_servos();
     //sets inital claw position to up and closed	 
     set_servo_position(servo_port_sweeper, sweeper_start);
