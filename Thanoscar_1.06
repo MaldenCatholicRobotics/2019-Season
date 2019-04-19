@@ -27,13 +27,22 @@ void drive(int time, int l_power, int r_power);
 //drives the bot in either direction until the ir sensor reaches the line
 void drive_until_line(int tape_benchmark, int l_power, int r_power);
 
+//uses the straight edge of the black tape to straighten out
+void line_up(int speed);
+
 //goes from starting box to start of centers tape while grabbing the ambulance
 void opening_sequence();
+
+//function if the center 1 is on fire
+void center_1_fire();
+
+//function if the center 2 is on fire
+void center_2_fire();
 
 //Runs the main body of the code
 void body();
 
-void line_up(int speed);
+
 
 //GLOBAL VARIABLES
 //ports of the servos, motors and ir sensors
@@ -41,6 +50,7 @@ int m_port_l = 2;
 int m_port_r = 3;
 int f_ir_port = 0;
 int r_ir_port = 1; 
+int s_ir_port = 2;
 int servo_port_scooper = 1;
 int servo_port_sweeper = 0;
 
@@ -91,11 +101,9 @@ int main()
 
 {
     enable_servos();
-    //sets inital claw position to up and closed	  
-    set_servo_position(servo_port_scooper, scooper_up);
+    //sets inital claw position to up and closed	 
     set_servo_position(servo_port_sweeper, sweeper_start);
-    //line_up(10);
-    opening_sequence();
+    set_servo_position(servo_port_scooper, scooper_down);
     body();
     disable_servos();
     return 0;
@@ -162,9 +170,7 @@ void line_follower(int runtime, int tape_benchmark)
     }
     //turns off motors
      freeze(m_port_l);
-    freeze(m_port_r);
-    ao();
-    
+    freeze(m_port_r);   
 }
 
 //follows the edge of a line backwards using a single ir sensor
@@ -227,7 +233,6 @@ void reverse_line_follower(int runtime, int tape_benchmark)
     //turns off motors
     freeze(m_port_l);
     freeze(m_port_r);
-    ao();
 }
 
 //determines if a building or medical center is on fire and returns a boolean value
@@ -364,10 +369,10 @@ void turn(int time, int power, int port)
     //spins the motor at a certain power for a certain amount of time
     mav(port, power); 
     msleep(time); 
-   freeze(m_port_l);
-    freeze(m_port_r);
+    
     //shuts off motors
-    ao();
+    freeze(m_port_l);
+    freeze(m_port_r);
 } 
 
 //drives the bot forward for a certain time, with each motor able to spin at a different speed
@@ -379,13 +384,13 @@ void drive(int time, int l_power, int r_power)
     //spins the left motor at a certain speed
     motor(m_port_l, l_power); 
 	
-    //spins the left motor at a certain speed
+    //spins the right motor at a certain speed
     motor(m_port_r, r_power); 
     msleep(time); 
-	 freeze(m_port_l);
-    freeze(m_port_r);
+    
     //shuts off motors
-    ao(); 
+    freeze(m_port_l);
+    freeze(m_port_r);
 } 
 
 //drives the bot in either direction until the ir sensor reaches the line
@@ -438,10 +443,54 @@ void drive_until_line(int tape_benchmark, int l_power, int r_power)
 		}
 	}
     }
-	 freeze(m_port_l);
+     //shuts off motors
+     freeze(m_port_l);
     freeze(m_port_r);
-    //shuts off motors
-    ao();
+}
+
+//uses the straight edge of the black tape to straighten out
+//speed- how quickly the bot straightens out
+//basically a fancy backwards drive_until_line
+//checks position every 1/100 of a second
+void line_up(int speed)
+{
+    while (1)
+    {
+        //makes variables for the two sensors' data
+        int lcliffamt = analog(s_ir_port);
+        int rcliffamt = analog(f_ir_port);
+        
+        printf("lcliffamt: %d\trcliffamt: %d\n", lcliffamt, rcliffamt);
+        
+	//if the two sensors are both not on black tape
+        if (lcliffamt < 2000 && rcliffamt < 2000)
+        {
+	    //move backwards
+            drive(10, -speed, -speed);
+        }
+	//right sensor is on tape but left is not
+        else if (lcliffamt < 2000 && rcliffamt > 2000)
+        {
+	    //turn left
+            drive(10, -speed, speed);
+        }
+	//left sensor is on tape but right is not
+        else if (lcliffamt > 2000 && rcliffamt < 2000)
+        {
+	    //turn right
+            drive(10, speed, -speed);
+        }
+	//both sensors are on tape
+        else
+        {
+	    //stop and kick from loop
+            freeze(m_port_l);
+            freeze(m_port_r);
+            break;
+        }
+	
+        msleep(10);
+    }
 }
 
 //goes from starting box to start of centers tape while grabbing the ambulance
@@ -449,6 +498,9 @@ void opening_sequence()
 {
 	//put sweeper down over ambulance
 	servo_change(sweeper_start, sweeper_down, servo_port_sweeper, 30);
+	
+	//puts scooper up from starting position
+        servo_change(scooper_down, scooper_up, servo_port_scooper, 30);
 	
 	//drive past the starting box tape
 	drive(2400, reg_speed, 1400);
@@ -465,12 +517,9 @@ void opening_sequence()
     
 }
 
-//Runs the main body of the code
-void body()
+//function if the center 1 is on fire
+void center_1_fire()
 {
-	//if the first center is on fire
-	if(fire_scan(fire_benchmark))
-    {
 	//drives up to the second center
         //drive(200, reg_speed, reg_speed);
 	
@@ -550,11 +599,13 @@ void body()
 	//backs up slightly
         drive(1300, r_reg_speed, r_reg_speed);
         turn(700, turn_power, m_port_r);
-        reverse_line_follower(25, black_tape);
-    }
-    else
-    {
-        drive(200, r_reg_speed, r_reg_speed);
+        reverse_line_follower(25, black_tape);	
+}
+
+//function if the center 2 is on fire
+void center_2_fire()
+{
+	drive(200, r_reg_speed, r_reg_speed);
 	//turns part of the way to face center 1
         turn(1000, turn_power, m_port_r);
 	    
@@ -688,8 +739,20 @@ void body()
 	    
 	//backs up slightly
         reverse_line_follower(33, black_tape);
-        
-       
+
+}
+//Runs the main body of the code
+void body()
+{
+	opening_sequence();
+	//if the first center is on fire
+	if(fire_scan(fire_benchmark))
+    {
+	center_1_fire();
+    }
+    else
+    {
+	center_2_fire();
     }
 }
 
@@ -700,34 +763,4 @@ void body()
 
 
 
-void line_up(int speed)
-{
-    while (1)
-    {
-        int lcliffamt = analog(2);
-        int rcliffamt = analog(0);
-        
-        printf("lcliffamt: %d\trcliffamt: %d\n", lcliffamt, rcliffamt);
-        
-        if (lcliffamt < 2000 && rcliffamt < 2000)
-        {
-            drive(10, -speed, -speed);
-        }
-        else if (lcliffamt < 2000 && rcliffamt > 2000)
-        {
-            drive(10, -speed, speed);
-        }
-        else if (lcliffamt > 2000 && rcliffamt < 2000)
-        {
-            drive(10, speed, -speed);
-        }
-        else
-        {
-            freeze(m_port_l);
-            freeze(m_port_r);
-            break;
-        }
-        
-        msleep(10);
-    }
-}
+
