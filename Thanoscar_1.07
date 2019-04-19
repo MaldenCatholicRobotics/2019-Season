@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 //Notes
+//line_up had a mistake but worked.  investigate
 //
 
 //FUNCTION DECLARATIONS
@@ -503,40 +504,34 @@ void opening_sequence()
         servo_change(scooper_down, scooper_up, servo_port_scooper, 30);
 	
 	//drive past the starting box tape
-	drive(2400, reg_speed, 1400);
-	msleep(1000);
-   
+	drive(2400, reg_speed, reg_speed);
+
 	//turn left onto the buildings tape
 	turn(turn_time-200, turn_power, m_port_r);
 	
 	//line follows to the end of the buildings tape
     	line_follower(25, black_tape);
-	msleep(1000);
-	//turns right onto the centers tape
-	turn(turn_time+150, turn_power, m_port_l);
-    
+
+	//turns right onto the centers tape to prepare for fire_scan
+	turn(turn_time+150, turn_power, m_port_l);    
 }
 
 //function if the center 1 is on fire
 void center_1_fire()
 {
-	//drives up to the second center
-        //drive(200, reg_speed, reg_speed);
-	
-	//turn so amulance is in front of the second center
+	//turn so amulance is facing the corner of center 2
         turn(800, turn_power, m_port_r); 
 	
 	//lifts sweeper arm clear over ambulance
         servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
-        msleep(1000);
-	
+
 	//backs up so the front bar of the sweeper is behind the ambulance
         drive(1000, r_reg_speed, r_reg_speed);
 	
 	//puts down the sweeper
         servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
 	
-	//pushes the ambulance deeper into the second center's box
+	//pushes the ambulance deeper into the center 2's box
         drive(1200, reg_speed, reg_speed);
 	
 	//backs out of the zone
@@ -560,18 +555,19 @@ void center_1_fire()
 	//line follows bakcwards to correct position
         reverse_line_follower(12, black_tape);
         
-	
 	//turns to face the row of people
 	turn(turn_time-210, turn_power, m_port_r);
-        msleep(1000);
-		line_up(10);
+
+	//lines up to perfectly face the people
+	line_up(10);
+	
         //drives under the skybridge to hover over the people
         drive(1500, reg_speed, reg_speed);
 	    
-	//puts the sweeper down
+	//puts the sweeper down over the bottom people
         servo_change(sweeper_grab, sweeper_down, servo_port_sweeper, 30);
 	
-	//scooper knocks down the people on top
+	//puts scooper down over the top row of people
         servo_change(scooper_up, scooper_down, servo_port_scooper, 30);
 	
 	//backs up to the buildings tape
@@ -584,7 +580,7 @@ void center_1_fire()
 	//drives so sweeper is in center 2
         drive(1300, reg_speed, reg_speed);
         
-        //raises sweeper clear of the ambulance
+        //raises sweeper clear of the people
         servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
 	    
 	//backs up to prepare for sweeping people
@@ -596,16 +592,23 @@ void center_1_fire()
 	//pushes the people deeper into the zone
         drive(1400, reg_speed, reg_speed);
 	    
-	//backs up slightly
+	//backs up to the buildings tape
         drive(1300, r_reg_speed, r_reg_speed);
+	
+	//turns parallel to the buildings tape
         turn(700, turn_power, m_port_r);
+	
+	//backs up to the second row of people
         reverse_line_follower(25, black_tape);	
 }
 
 //function if the center 2 is on fire
 void center_2_fire()
 {
+	
+	//backs up slightly
 	drive(200, r_reg_speed, r_reg_speed);
+	
 	//turns part of the way to face center 1
         turn(1000, turn_power, m_port_r);
 	    
@@ -615,6 +618,7 @@ void center_2_fire()
 	//turns to fully face the center
         turn(300, turn_power, m_port_r);
         
+	//puts ambulance flush against front of sweeper
         drive(400, r_reg_speed, r_reg_speed);
 	    
 	//raises sweeper clear of the ambulance
@@ -622,51 +626,35 @@ void center_2_fire()
 	    
 	//drives backwards so front bar of sweeper is behind the ambulance
         reverse_line_follower(5, black_tape);
-        //drive(500, r_reg_speed, r_reg_speed);
 	
 	//puts sweeper down
         servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
 	    
-	//pushes the ambulance deeper into the zone
-       line_follower(13, black_tape);
-	    
-	//backs up slightly
-        reverse_line_follower(4, black_tape);
-        //drive(400, r_reg_speed, r_reg_speed);
-	    
-	//turns right partially to get onto buildings tape
-        turn(turn_time, turn_power, m_port_l);
-        msleep(1000);
+	//pushes the ambulance deeper into the zone while correcting itself
+        line_follower(13, black_tape);
 	   
-	//backs up for clearance
-        drive(500, r_reg_speed, r_reg_speed);
-        msleep(1000);
-	
         //readies the sweeper to grab the people
 	servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
-        msleep(1000);
         
-	//finishes the turn onto the buildings tape
-        turn(turn_time, turn_power, m_port_l);
-        msleep(1000);
+	//line follows backwards up to the first row of people
+        reverse_line_follower(26, black_tape);
 	
-	//line follows up to the first row of people
-        line_follower(20, black_tape);
         msleep(1000);
-        reverse_line_follower(19, black_tape);
+        line_follower(19, black_tape);
 	    
 	//turns partially left to face the people
         turn(turn_time-110, turn_power, m_port_r);
-        msleep(3000);
+      
+        //lines up with tape to face the people
         line_up(10);
-		msleep(3000);
+		
 	//drives under the skybridge to hover over the people
         drive(1500, reg_speed-100, reg_speed);
 	    
-	//puts the sweeper down
+	//puts the sweeper down over the bottom
         servo_change(sweeper_grab, sweeper_down, servo_port_sweeper, 30);
 	
-	//scooper knocks down the people on top
+	//scooper is lowered behind the top row of people
         servo_change(scooper_up, scooper_down, servo_port_scooper, 30);
 	
 	//backs up to the buildings tape
@@ -675,38 +663,40 @@ void center_2_fire()
 	
 	//turns to face center 1
         turn(turn_time, turn_power, m_port_r);
-	msleep(1000);
+
+	//pushes the people into the center 1 zone while correcting self
 	line_follower(9, black_tape);
-        msleep(1000);
-        
-        //turn(100, turn_power, m_port_r);
-	    
+         
         //raises sweeper clear of the ambulance
         servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
-	  msleep(1000);
+
 	//drive back to prepare to push people
 	reverse_line_follower(10, black_tape);
 	
 	//puts sweeper down
         servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
 	    
-	//pushes the people deeper into the zone
+	//pushes the people deeper into the zone while correcting self
         line_follower(8, black_tape);
-	    servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
-	//backs up slightly
+	
+	//puts the sweeper back up to not get caught on tape
+	servo_change(sweeper_down, sweeper_grab, servo_port_sweeper, 30);
+	
+	//backs up to second row of people
         reverse_line_follower(33, black_tape);
         
+	//turns to face the second row of people
         turn(turn_time, turn_power, m_port_l);
         
-         line_up(10);
-		msleep(3000);
+	//lines up with black tape to perfectly face the people
+        line_up(10);
+	
 	//drives under the skybridge to hover over the people
         servo_change(scooper_down, scooper_up, servo_port_scooper, 30);
+	
+	//drives under the skybridge to hover over the people
         drive(1500, reg_speed-100, reg_speed);
-	    
-	//puts the sweeper down
-       
-	    
+	       
 	//puts the sweeper down
         servo_change(sweeper_grab, sweeper_down, servo_port_sweeper, 30);
 	
@@ -719,32 +709,34 @@ void center_2_fire()
 	
 	//turns to face center 1
         turn(turn_time, turn_power, m_port_r);
-	msleep(1000);
+	
+	//brings the people into the center 1 zone
 	line_follower(29, black_tape);
-        msleep(1000);
-        
-        //turn(100, turn_power, m_port_r);
-	    
-        //raises sweeper clear of the ambulance
+         
+        //raises sweeper clear of the people
         servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
-	  msleep(1000);
+
 	//drive back to prepare to push people
 	reverse_line_follower(12, black_tape);
 	
 	//puts sweeper down
         servo_change(sweeper_up, sweeper_down, servo_port_sweeper, 30);
 	    
-	//pushes the people deeper into the zone
+	//pushes the people deeper into the zone while correcting self
         line_follower(9, black_tape);
 	    
-	//backs up slightly
-        reverse_line_follower(33, black_tape);
-
+	//lifts up sweeper so it doesn't get caught on the tape
+	servo_change(sweeper_down, sweeper_up, servo_port_sweeper, 30);
+	
+	//drives backwards slightly to get out of center 1
+        reverse_line_follower(5, black_tape);
 }
-//Runs the main body of the code
+
+//runs the main body of the code
 void body()
 {
 	opening_sequence();
+	
 	//if the first center is on fire
 	if(fire_scan(fire_benchmark))
     {
@@ -755,12 +747,3 @@ void body()
 	center_2_fire();
     }
 }
-
-
-    
-  
-    
-
-
-
-
