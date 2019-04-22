@@ -1,11 +1,33 @@
 #include <kipr/botball.h>
 
+void servo_change(int op, int wp, int servoport, int speed);
 void moveFor(int speed, float seconds);
 void moveUntilBump(int speed);
 void turn(int degrees);
 void lineUp(int speed);
 void createConnectDetailed();
 void printBatteryInfo();
+
+//the port of the light sensor used to start the bot
+int start_light = ;
+
+//the servo port for the claw
+int claw_port = ;
+
+//the servo port for moving the claw up and down
+int lift_port = ;
+
+//the servo port for turning the claw
+int turn_port = ;
+
+claw_open = ;
+claw_close = ;
+
+lift_up = ;
+lift_down = ;
+
+turn_left = ;
+turn_right = ;
 
 int main()
 
@@ -19,6 +41,60 @@ int main()
     disable_servos();
     return 0;
 }
+
+//moves a servo from one given position to another at a certain speed
+//op- the starting position of the servo
+//wp- the ending positon of the servo
+//servoport- the port of the servo 
+//speed- the increment by which the servo position is repeatedly moved
+void servo_change(int op, int wp, int servoport, int speed) 
+{   
+    //allows for the servo to change in any direction
+    if (op > wp) 
+    { 
+        while(op > wp)  
+        {   
+	    //if the position is less than one increment away from the wanted position
+	    if(op - wp < speed)
+	    {
+		    //just set the claw to the end position
+		    set_servo_position(servoport, wp);
+		    op = wp;
+	    }
+	    else
+	    {
+		    //increments the position
+		    op -= speed;  
+
+		    //sets the servo position to the incremented position
+		    set_servo_position(servoport, op);   
+		    msleep(100); 
+	    }
+        }   
+    }
+    else 
+    { 
+        while(wp > op)  
+        {   
+	    //if the position is less than one increment away from the wanted position
+	    if(wp - op < speed)
+	    {
+		    //just set the claw to the end position
+		   set_servo_position(servoport, op); 
+		   op = wp;
+	    }
+	    else
+	    {
+		    //increments the position
+		    op += speed; 
+
+		    //sets the servo position to the incremented position
+		    set_servo_position(servoport, op);   
+		    msleep(100); 
+	    }
+        }   
+    } 
+}    
 
 void moveFor(int speed, float seconds)
 {
