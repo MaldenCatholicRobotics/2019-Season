@@ -7,6 +7,7 @@ void turn(int degrees);
 void lineUp(int speed);
 void createConnectDetailed();
 void printBatteryInfo();
+void grab_valve();
 
 //the port of the light sensor used to start the bot
 int start_light = ;
@@ -26,8 +27,8 @@ claw_close = ;
 lift_up = ;
 lift_down = ;
 
-turn_left = ;
-turn_right = ;
+turn_vert = ;
+turn_horiz = ;
 
 int main()
 
@@ -35,9 +36,14 @@ int main()
     //wait_for_light(start_light);
     shut_down_in(119); 
     enable_servos();
-    //sets inital claw position to up and closed	 
-    set_servo_position(servo_port_sweeper, sweeper_start);
-    set_servo_position(servo_port_scooper, scooper_down);
+    create_connect_detailed();
+    printBatteryInfo();
+	
+    //sets inital claw position to up, closed and vertical	 
+    set_servo_position(claw_port, claw_close);
+    set_servo_position(lift_port, lift_up);
+    set_servo_position(turn_port, turn_vert);
+	
     disable_servos();
     return 0;
 }
@@ -179,4 +185,18 @@ void printBatteryInfo()
 {
     int powerLevel = power_level();
     printf("Battery level: %d\n", powerLevel);
+}
+
+void grab_valve()
+{
+	//opens claw
+	servo_change(claw_close, claw_open, claw_port, 30);
+	//lowers claw
+	servo_change(lift_up, lift_down, lift_port, 30);
+	//closes claw
+	servo_change(claw_open, claw_close, claw_port, 30);
+	//lifts claw up
+	servo_change(lift_down, lift_up, lift_port, 30);
+	//turns the valve horizontally
+	servo_change(turn_vert, turn_horiz, turn_port, 30);
 }
